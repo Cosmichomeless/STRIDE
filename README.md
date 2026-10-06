@@ -1,500 +1,375 @@
 # STRIDE
 
-## Project Overview
+> Native iOS running tracker focused on reliable GPS tracking, background execution, and location data processing.
 
-STRIDE is a mobile running tracker focused on reliable location tracking, including while the application is running in the background or while the device screen is locked.
+## Overview
 
-The objective is not to compete with Strava or Nike Run Club.
+STRIDE is a native iOS running tracker built to explore CoreLocation, background location updates, GPS data processing, persistent sessions, and MapKit.
 
-The objective is to build a technically robust GPS tracking application and understand how mobile operating systems manage:
+The objective is not to compete with products such as Strava or Nike Run Club.
 
-- Location.
-- Background tasks.
-- Permissions.
-- Battery usage.
-- Application lifecycle.
+Instead, STRIDE uses a focused running experience to explore how a real iOS application interacts with location services and the operating system while running in foreground, background, and with the screen locked.
 
----
+## Goals
 
-# Main Goal
+The project is designed to demonstrate knowledge of:
 
-The user should be able to:
+- Swift
+- SwiftUI
+- CoreLocation
+- MapKit
+- Background location
+- GPS filtering
+- Geospatial calculations
+- SwiftData
+- Swift Concurrency
+- iOS lifecycle
+- Battery-aware architecture
+- Persistent application state
+- Failure recovery
 
-1. Start a run.
-2. Put the phone in their pocket.
-3. Lock the screen.
-4. Continue running.
-5. Stop the run.
-6. See the recorded route and statistics.
+## Tech Stack
 
----
+- **Language:** Swift
+- **UI:** SwiftUI
+- **Location:** CoreLocation
+- **Maps:** MapKit
+- **Persistence:** SwiftData
+- **Concurrency:** Swift Concurrency
+- **Testing:** Swift Testing / XCTest
 
-# Main Features
+The project prioritizes native Apple frameworks.
 
-During a run display:
+## Core Tracking Pipeline
 
-- Distance.
-- Duration.
-- Current pace.
-- Average pace.
-- GPS status.
-- Route.
+```text
+CoreLocation
+      ↓
+Location Updates
+      ↓
+Validation / Filtering
+      ↓
+Tracking Session
+      ↓
+Persistence
+      ↓
+Calculations
+      ↓
+SwiftUI
+```
 
-Example:
+The user interface should not be the source of truth for an active running session.
 
-DISTANCE
-6.42 KM
+Persistent domain state should determine whether a run is currently active.
 
-PACE
-5'12" / KM
+## MVP
 
-TIME
-33:24
+The initial version should support:
 
----
+- Location permissions
+- GPS availability/status
+- Start run
+- Pause run
+- Resume run
+- Finish run
+- GPS point collection
+- Distance calculation
+- Duration
+- Current pace
+- Average pace
+- Background tracking
+- Route visualization
+- Run persistence
+- Run history
+- Run details
 
-# Technology Stack
+## Data Model
 
-## Mobile
+### Run
 
-- React Native
-- Expo
-- TypeScript
+```text
+Run
+├── id
+├── startedAt
+├── finishedAt
+├── duration
+├── distance
+├── averagePace
+└── status
+```
 
-## Location
+### LocationPoint
 
-- expo-location
+```text
+LocationPoint
+├── id
+├── runId
+├── latitude
+├── longitude
+├── altitude
+├── horizontalAccuracy
+├── speed
+└── timestamp
+```
 
-## Background Processing
+A single run may contain hundreds or thousands of location samples.
 
-- expo-task-manager
+## GPS Filtering
+
+Raw GPS data cannot be assumed to be correct.
+
+For example:
+
+```text
+Point A
+   ↓
+Point B — 8m away
+   ↓
+Point C — 450m away
+   ↓
+Point D — returns near Point B
+```
+
+Point C is probably GPS noise.
+
+The filtering strategy should consider factors such as:
+
+- `horizontalAccuracy`
+- Time between samples
+- Impossibly large jumps
+- Unrealistic speeds
+- Duplicate coordinates
+- Stale locations
+
+Filtering decisions should be documented and tested.
+
+## Distance Calculation
+
+Distance should be calculated from validated location samples.
+
+Possible strategies include:
+
+- `CLLocation.distance(from:)`
+- Geodesic calculations
+- Custom filtering before aggregation
+
+The goal is to avoid accumulating significant distance errors due to GPS noise.
+
+## Background Location
+
+Background behavior is a central part of the project.
+
+STRIDE should investigate and correctly configure:
+
+- `CLLocationManager`
+- Authorization states
+- Background location updates
+- `allowsBackgroundLocationUpdates`
+- `activityType`
+- `desiredAccuracy`
+- `distanceFilter`
+- iOS background restrictions
+
+The application should respect the iOS execution model rather than trying to artificially keep the process alive.
+
+## Session Recovery
+
+A run should not exist only in memory.
+
+Conceptually:
+
+```text
+Start Run
+   ↓
+Persist Active Session
+   ↓
+Receive Locations
+   ↓
+Persist Locations
+   ↓
+App changes state
+   ↓
+Restore Active Session
+```
+
+When the app starts, it should be able to determine whether a running session was previously active.
 
 ## Maps
 
-- MapLibre React Native
-
-## State
-
-- Zustand
-
-## Local Database
-
-- SQLite
-
-## Styling
-
-- NativeWind
-
----
-
-# Technical Objectives
-
-This project should teach and demonstrate:
-
-- GPS permissions.
-- Foreground location tracking.
-- Background location tracking.
-- Background tasks.
-- Mobile operating system restrictions.
-- Battery-aware design.
-- Location accuracy.
-- GPS noise filtering.
-- Route storage.
-- Map rendering.
-- Distance calculation.
-- Pace calculation.
-- Session persistence.
-- Crash recovery.
-
----
-
-# Core Tracking Flow
-
-START RUN
-
-    ↓
-
-Create RunSession
-
-    ↓
-
-Start GPS tracking
-
-    ↓
-
-Receive LocationPoint
-
-    ↓
-
-Validate point
-
-    ↓
-
-Store locally
-
-    ↓
-
-Calculate distance
-
-    ↓
-
-Calculate pace
-
-    ↓
-
-Update UI
-
-When backgrounded:
-
-GPS
-    ↓
-Background Task
-    ↓
-SQLite
-
-The UI does not need to remain active for tracking to continue.
-
----
-
-# Data Model
-
-## Run
-
-Run {
-    id
-    startedAt
-    finishedAt
-    distance
-    duration
-    averagePace
-    status
-}
-
-## LocationPoint
-
-LocationPoint {
-    id
-    runId
-    latitude
-    longitude
-    altitude
-    accuracy
-    speed
-    timestamp
-}
-
-A run may contain hundreds or thousands of location points.
-
----
-
-# Distance Calculation
-
-Distance should be calculated using GPS coordinates.
-
-Possible algorithms:
-
-- Haversine formula.
-- Geodesic distance library.
-
-The implementation should not blindly accept every GPS point.
-
-Bad GPS samples should be filtered based on:
-
-- Accuracy.
-- Unrealistic speed.
-- Impossible jumps.
-- Timestamp difference.
-
----
-
-# Background Tracking
-
-This is one of the most important parts of the project.
-
-The application should continue collecting location points when:
-
-- The screen turns off.
-- The user switches applications.
-- The app moves to the background.
-
-Platform limitations must be documented.
-
-Android and iOS may behave differently.
-
----
-
-# Run Recovery
-
-The application must handle this scenario:
-
-User starts run
-
-    ↓
-
-App enters background
-
-    ↓
-
-Operating system terminates UI process
-
-    ↓
-
-User reopens application
-
-The app should detect that an active run exists and restore the session.
-
-The database, not UI state, should be the source of truth.
-
----
-
-# Map
-
-During the run:
-
-- Display current location.
-- Display route polyline.
-
-After the run:
-
-- Display complete route.
-- Fit map to route.
-- Display statistics.
-
----
-
-# Functional Requirements
-
-## Start Run
-
-The user can:
-
-- Start tracking.
-- See GPS status.
-- See timer.
-- See route.
-
-## During Run
-
-Display:
-
-- Distance.
-- Time.
-- Pace.
-- Route.
-
-Controls:
-
-- Pause.
-- Resume.
-- Finish.
-
-Optional:
-
-- Lap / split.
-
-## Run History
-
-Display previous runs with:
-
-- Date.
-- Distance.
-- Duration.
-- Average pace.
-
----
-
-# Architecture
-
-Suggested structure:
-
-src/
-
-features/
-    tracking/
-    history/
-    run-details/
-
-services/
-    location/
-    tracking/
-    calculations/
-
-database/
-    runs/
-    locationPoints/
-
-tasks/
-    backgroundLocationTask.ts
-
-store/
-
-components/
-
-utils/
-
----
-
-# MVP
-
-The MVP should contain:
-
-- Location permissions.
-- Start run.
-- GPS tracking.
-- Background tracking.
-- Distance calculation.
-- Timer.
-- Route rendering.
-- Stop run.
-- Save run.
-- Run history.
-
----
-
-# Features Outside Initial MVP
-
-Do NOT implement initially:
-
-- Social network.
-- Followers.
-- Challenges.
-- Leaderboards.
-- Training plans.
-- Smartwatch integration.
-- Heart-rate sensors.
-- Strava integration.
-- AI coaching.
-
-The focus is reliable tracking.
-
----
-
-# Important Engineering Challenges
-
-## 1. GPS Noise
-
-GPS data is imperfect.
-
-Example:
-
-Point A
-    ↓
-Point B 10m away
-    ↓
-Point C suddenly 400m away
-    ↓
-Point D returns
-
-The system should detect invalid jumps.
-
----
-
-## 2. Background Execution
-
-Tracking must continue without requiring the UI to remain open.
-
----
-
-## 3. Battery Consumption
-
-Location frequency must balance:
-
-ACCURACY
-
-vs
-
-BATTERY
-
----
-
-## 4. Session Recovery
-
-An active run should survive application restarts whenever possible.
-
----
-
-# Development Phases
-
-## Phase 1 — Product Definition
+MapKit will be used to display:
+
+- Current user position
+- Recorded route
+- Route polyline
+- Completed run
+- Automatic map framing
+
+## Project Structure
+
+Initial direction:
+
+```text
+STRIDE/
+├── App/
+├── Features/
+│   ├── Tracking/
+│   ├── History/
+│   └── RunDetails/
+├── Location/
+├── Tracking/
+├── Calculations/
+├── Persistence/
+├── Models/
+├── Maps/
+└── Tests/
+```
+
+## Development Roadmap
+
+### Phase 1 — Product Definition
 
 Define:
 
-- Run flow.
-- Tracking screen.
-- History.
-- Run details.
+- MVP
+- Running flow
+- Main screens
+- User experience
 
-## Phase 2 — Location Engine
+### Phase 2 — Architecture
+
+Define:
+
+- Location architecture
+- Session lifecycle
+- Persistence boundaries
+
+### Phase 3 — Data Model
+
+Design:
+
+- Runs
+- Location points
+- Active session state
+
+### Phase 4 — Location Service
 
 Implement:
 
-- Permissions.
-- GPS updates.
-- Location model.
+- Permissions
+- CLLocationManager
+- Location stream
 
-## Phase 3 — Tracking Engine
-
-Implement:
-
-- Sessions.
-- Distance.
-- Pace.
-- Timer.
-
-## Phase 4 — Background Tracking
+### Phase 5 — Tracking Session
 
 Implement:
 
-- Task manager.
-- Persistent tracking.
+- Start
+- Pause
+- Resume
+- Finish
+- Timer
 
-## Phase 5 — Database
+### Phase 6 — Distance Calculation
+
+Implement validated distance calculation.
+
+### Phase 7 — GPS Filtering
+
+Design and test location filtering.
+
+### Phase 8 — Persistence
 
 Persist:
 
-- Runs.
-- GPS points.
+- Active sessions
+- Location points
+- Completed runs
 
-## Phase 6 — Maps
+### Phase 9 — Background Tracking
+
+Implement and test background behavior.
+
+### Phase 10 — MapKit
 
 Implement:
 
-- Route.
-- Polyline.
-- Run details.
+- Route polyline
+- Current location
+- Completed route
 
-## Phase 7 — Reliability
+### Phase 11 — Run History
+
+Build history and details screens.
+
+### Phase 12 — Reliability
 
 Test:
 
-- Screen lock.
-- Background.
-- App restart.
-- Poor GPS.
-- Permission changes.
+- Screen locking
+- Backgrounding
+- App restart
+- Poor GPS
+- Permission changes
+- Interrupted runs
 
-## Phase 8 — Documentation
+### Phase 13 — Battery Optimization
+
+Analyze the relationship between:
+
+```text
+Accuracy ↔ Update Frequency ↔ Battery Usage
+```
+
+### Phase 14 — Testing
+
+Add tests for:
+
+- Distance
+- Pace
+- GPS filtering
+- Session state
+
+### Phase 15 — Documentation
 
 Document:
 
-- Tracking architecture.
-- GPS filtering.
-- Background execution.
-- Battery decisions.
+- Location architecture
+- GPS filtering
+- Background behavior
+- Trade-offs
 
----
+### Phase 16 — Release
 
-# Portfolio Value
+Prepare final demo and release.
 
-STRIDE should demonstrate knowledge of:
+## Out of Scope
 
-- Geolocation.
-- Background execution.
-- Mobile OS behavior.
-- GPS algorithms.
-- Persistent state.
-- Map rendering.
-- Battery-aware architecture.
-- Fault tolerance.
+The initial version will not include:
 
-The project should be presented as a mobile systems engineering project rather than simply a fitness application.
+- Social network
+- Followers
+- Leaderboards
+- Challenges
+- Training plans
+- Apple Watch
+- HealthKit
+- Heart-rate sensors
+- Strava integration
+- AI coaching
+- Backend services
+
+## Project Philosophy
+
+STRIDE is not primarily a fitness product.
+
+It is a mobile systems project built around:
+
+> Reliable native location tracking, background execution, GPS processing, persistence, and lifecycle management.
+
+## Status
+
+🚧 **In development**
+
+Current stage:
+
+**Phase 1 — Product Definition**
