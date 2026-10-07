@@ -204,6 +204,19 @@ MapKit will be used to display:
 - Completed run
 - Automatic map framing
 
+## Getting Started
+
+The Xcode project is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+
+```bash
+brew install xcodegen
+xcodegen generate
+xcodebuild test -project STRIDE.xcodeproj -scheme STRIDE \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+Design documents live in [`docs/`](docs): [Product](docs/PRODUCT.md) and [Architecture](docs/ARCHITECTURE.md).
+
 ## Project Structure
 
 Initial direction:
