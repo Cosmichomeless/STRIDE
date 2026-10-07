@@ -12,6 +12,8 @@ final class TrackingCoordinator {
     private(set) var metrics = RunMetrics()
     /// Accepted points of the active run grouped in segments, for the map.
     private(set) var route = Route()
+    /// Set when the run was paused without the user asking for it; cleared by any later action.
+    private(set) var pauseReason: PauseReason?
     /// The run being recorded, or the one that just finished until a new one starts.
     private(set) var runId: UUID?
     /// The last storage failure. Tracking continues in memory when a write fails, but the
@@ -20,6 +22,10 @@ final class TrackingCoordinator {
     @ObservationIgnored private var validator = SampleValidator()
     /// The user asked to start while the permission prompt was showing.
     private(set) var isAwaitingPermission = false
+
+    /// Without a point or any other sign of life for this long, a run found active on launch is
+    /// treated as interrupted and paused where the activity stopped instead of counting the gap.
+    static let interruptionThreshold: TimeInterval = 120
 
     let location: any LocationProviding
     private let store: any RunStore
@@ -62,7 +68,11 @@ final class TrackingCoordinator {
 
     func pause() { perform(.pause) }
 
-    func resume() { perform(.resume) }
+    func resume() {
+        // Resuming without access would run a timer that records nothing.
+        if session.state == .paused, !location.authorization.canTrack { return }
+        perform(.resume)
+    }
 
     func finish() {
         perform(.finish)
@@ -121,6 +131,7 @@ final class TrackingCoordinator {
         runId = id
         lastError = nil
         persistenceError = nil
+        pauseReason = nil
         location.setBackgroundTracking(true)
         location.startUpdates()
     }
@@ -137,6 +148,7 @@ final class TrackingCoordinator {
             }
             session = next
             lastError = nil
+            pauseReason = nil
             persist()
             // Nothing is connected across a pause: the first sample after resuming starts a new segment.
             switch action {
@@ -222,11 +234,20 @@ final class TrackingCoordinator {
             runId = record.id
             validator = SampleValidator(segmentStart: now())
             guard session.state == .active else { return }
-            if location.authorization.canTrack {
+
+            // Nothing was recorded for a long time: the app was not running. Pause where the
+            // activity stopped instead of counting hours of silence as running time.
+            let current = now()
+            let lastActivity = min(current, max(record.lastResumedAt ?? current, points.last?.sample.timestamp ?? .distantPast))
+            if current.timeIntervalSince(lastActivity) > Self.interruptionThreshold {
+                try? session.pause(at: lastActivity)
+                persist()
+                pauseReason = .interrupted(at: lastActivity)
+            } else if location.authorization.canTrack {
                 location.setBackgroundTracking(true)
                 location.startUpdates()
             } else {
-                perform(.pause)
+                pauseAfterLosingAccess()
             }
         } catch {
             persistenceError = error
@@ -237,5 +258,11 @@ final class TrackingCoordinator {
         if isAwaitingPermission {
             if authorization.canTrack { beginRun() } else { isAwaitingPermission = false }
         }
+        if session.state == .active, !authorization.canTrack { pauseAfterLosingAccess() }
+    }
+
+    private func pauseAfterLosingAccess() {
+        perform(.pause)
+        if session.state == .paused { pauseReason = .permissionLost }
     }
 }
