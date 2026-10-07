@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Xcode / XcodeGen (project is generated from project.yml)
+*.xcodeproj
+xcuserdata/
+DerivedData/
+.build/
