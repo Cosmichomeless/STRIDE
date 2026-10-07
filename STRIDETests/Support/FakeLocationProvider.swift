@@ -11,6 +11,8 @@ final class FakeLocationProvider: LocationProviding {
     private let authorizationContinuation: AsyncStream<LocationAuthorization>.Continuation
     private(set) var isUpdating = false
     private(set) var startCount = 0
+    /// What the user answers when the system permission prompt is shown.
+    var promptResult: LocationAuthorization = .whenInUse
 
     init(authorization: LocationAuthorization = .whenInUse) {
         self.authorization = authorization
@@ -18,7 +20,9 @@ final class FakeLocationProvider: LocationProviding {
         (authorizationChanges, authorizationContinuation) = AsyncStream.makeStream()
     }
 
-    func requestAuthorization() { if authorization.canRequest { setAuthorization(.whenInUse) } }
+    func gpsStatus(now: Date) -> GPSStatus { authorization.canTrack ? .good : .unavailable }
+
+    func requestAuthorization() { if authorization.canRequest { setAuthorization(promptResult) } }
     func startUpdates() { isUpdating = true; startCount += 1 }
     func stopUpdates() { isUpdating = false }
 

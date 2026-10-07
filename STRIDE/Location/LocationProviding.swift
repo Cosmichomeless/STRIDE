@@ -5,6 +5,7 @@ import Foundation
 @MainActor
 protocol LocationProviding: AnyObject {
     var authorization: LocationAuthorization { get }
+    func gpsStatus(now: Date) -> GPSStatus
     /// Raw, unfiltered samples in arrival order, with the original timestamps.
     /// Meant for a single consumer for the lifetime of the app.
     var samples: AsyncStream<LocationSample> { get }

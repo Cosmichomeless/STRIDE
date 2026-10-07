@@ -2,11 +2,11 @@ import SwiftUI
 
 @main
 struct STRIDEApp: App {
-    @State private var location = LocationService()
+    @State private var coordinator = TrackingCoordinator(location: LocationService())
 
     var body: some Scene {
         WindowGroup {
-            TrackingView(location: location)
+            TrackingView(coordinator: coordinator)
         }
     }
 }
