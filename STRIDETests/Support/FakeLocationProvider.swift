@@ -11,6 +11,7 @@ final class FakeLocationProvider: LocationProviding {
     private let authorizationContinuation: AsyncStream<LocationAuthorization>.Continuation
     private(set) var isUpdating = false
     private(set) var startCount = 0
+    private(set) var isBackgroundTracking = false
     /// What the user answers when the system permission prompt is shown.
     var promptResult: LocationAuthorization = .whenInUse
 
@@ -25,6 +26,7 @@ final class FakeLocationProvider: LocationProviding {
     func requestAuthorization() { if authorization.canRequest { setAuthorization(promptResult) } }
     func startUpdates() { isUpdating = true; startCount += 1 }
     func stopUpdates() { isUpdating = false }
+    func setBackgroundTracking(_ enabled: Bool) { isBackgroundTracking = enabled }
 
     func emit(_ sample: LocationSample) { sampleContinuation.yield(sample) }
     func setAuthorization(_ value: LocationAuthorization) {

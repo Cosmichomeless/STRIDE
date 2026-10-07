@@ -16,6 +16,11 @@ targets:
     platform: iOS
     sources:
       - path: STRIDE
+    info:
+      path: STRIDE/Info.plist
+      properties:
+        # Required for allowsBackgroundLocationUpdates; without it CoreLocation raises an exception.
+        UIBackgroundModes: [location]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cosmichomeless.stride

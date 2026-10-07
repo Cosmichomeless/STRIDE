@@ -15,4 +15,7 @@ protocol LocationProviding: AnyObject {
     func requestAuthorization()
     func startUpdates()
     func stopUpdates()
+    /// Lets updates continue while the app is in the background or the screen is locked.
+    /// Enabled only while a run is in progress; otherwise the app should stop with the foreground.
+    func setBackgroundTracking(_ enabled: Bool)
 }
