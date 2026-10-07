@@ -15,5 +15,8 @@ struct TrackingView: View {
             }
             .padding()
         }
+        // Warm up the GPS so a fix is ready when the user taps Start.
+        .onAppear { location.startUpdates() }
+        .onChange(of: location.authorization) { _, _ in location.startUpdates() }
     }
 }
