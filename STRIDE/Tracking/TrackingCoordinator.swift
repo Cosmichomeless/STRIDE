@@ -10,18 +10,26 @@ final class TrackingCoordinator {
     private(set) var lastError: InvalidTransition?
     /// Distance and pace of the active run, from validated samples only.
     private(set) var metrics = RunMetrics()
+    /// The run being recorded, or the one that just finished until a new one starts.
+    private(set) var runId: UUID?
+    /// The last storage failure. Tracking continues in memory when a write fails, but the
+    /// run is no longer guaranteed to survive a restart, so the UI surfaces this.
+    private(set) var persistenceError: (any Error)?
     @ObservationIgnored private var validator = SampleValidator()
     /// The user asked to start while the permission prompt was showing.
     private(set) var isAwaitingPermission = false
 
     let location: any LocationProviding
+    private let store: any RunStore
     private let now: @Sendable () -> Date
     @ObservationIgnored private var authorizationTask: Task<Void, Never>?
     @ObservationIgnored private var sampleTask: Task<Void, Never>?
 
-    init(location: any LocationProviding, now: @escaping @Sendable () -> Date = { Date() }) {
+    init(location: any LocationProviding, store: any RunStore, now: @escaping @Sendable () -> Date = { Date() }) {
         self.location = location
+        self.store = store
         self.now = now
+        restoreActiveRun()
         authorizationTask = Task { [weak self] in
             guard let changes = self?.location.authorizationChanges else { return }
             for await authorization in changes {
@@ -79,14 +87,25 @@ final class TrackingCoordinator {
         var fresh = TrackingSession()
         do {
             try fresh.start(at: now())
-            session = fresh
-            metrics = RunMetrics()
-            validator = SampleValidator(segmentStart: fresh.startedAt)
-            lastError = nil
-            location.startUpdates()
         } catch {
             lastError = error
+            return
         }
+        // The run exists in the store before it exists in memory: if it cannot be saved, it does not start.
+        let id = UUID()
+        do {
+            try store.save(record(id: id, session: fresh, metrics: RunMetrics()))
+        } catch {
+            persistenceError = error
+            return
+        }
+        session = fresh
+        metrics = RunMetrics()
+        validator = SampleValidator(segmentStart: fresh.startedAt)
+        runId = id
+        lastError = nil
+        persistenceError = nil
+        location.startUpdates()
     }
 
     private func perform(_ action: SessionAction) {
@@ -101,6 +120,7 @@ final class TrackingCoordinator {
             }
             session = next
             lastError = nil
+            persist()
             // Nothing is connected across a pause: the first sample after resuming starts a new segment.
             if action == .resume { validator.beginSegment(at: date) }
         } catch {
@@ -113,8 +133,73 @@ final class TrackingCoordinator {
     private func receive(_ sample: LocationSample) {
         guard session.state == .active else { return }
         let startsSegment = validator.lastAccepted == nil
-        if validator.process(sample, now: now()).isAccepted {
-            metrics.add(sample, startsSegment: startsSegment)
+        guard validator.process(sample, now: now()).isAccepted else { return }
+        metrics.add(sample, startsSegment: startsSegment)
+        guard let runId else { return }
+        do {
+            try store.append(TrackPoint(sample: sample, startsSegment: startsSegment), to: runId, distance: metrics.distance)
+        } catch {
+            persistenceError = error
+        }
+    }
+
+    // MARK: Persistence
+
+    private func record(id: UUID, session: TrackingSession, metrics: RunMetrics) -> RunRecord {
+        let status: RunStatus = switch session.state {
+        case .active: .active
+        case .paused: .paused
+        case .finished, .idle: .finished
+        }
+        return RunRecord(
+            id: id,
+            startedAt: session.startedAt ?? now(),
+            finishedAt: session.finishedAt,
+            status: status,
+            accumulatedDuration: session.accumulated,
+            lastResumedAt: session.lastResumedAt,
+            distance: metrics.distance,
+            averagePace: session.state == .finished ? metrics.averagePace(elapsed: session.accumulated) : nil
+        )
+    }
+
+    private func persist() {
+        guard let runId else { return }
+        do {
+            try store.save(record(id: runId, session: session, metrics: metrics))
+            persistenceError = nil
+        } catch {
+            persistenceError = error
+        }
+    }
+
+    /// Rebuilds the session after a relaunch from the persisted run and its points.
+    /// The time between the last sample and now is a gap: the first new sample starts a
+    /// segment, so no distance is invented across it.
+    private func restoreActiveRun() {
+        do {
+            guard let record = try store.activeRun() else { return }
+            var restored = RunMetrics()
+            for point in try store.points(of: record.id) {
+                restored.add(point.sample, startsSegment: point.startsSegment)
+            }
+            session = TrackingSession(
+                state: record.status == .active ? .active : .paused,
+                startedAt: record.startedAt,
+                accumulated: record.accumulatedDuration,
+                lastResumedAt: record.lastResumedAt
+            )
+            metrics = restored
+            runId = record.id
+            validator = SampleValidator(segmentStart: now())
+            guard session.state == .active else { return }
+            if location.authorization.canTrack {
+                location.startUpdates()
+            } else {
+                perform(.pause)
+            }
+        } catch {
+            persistenceError = error
         }
     }
 
