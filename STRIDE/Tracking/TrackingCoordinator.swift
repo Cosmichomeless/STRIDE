@@ -8,12 +8,16 @@ import Observation
 final class TrackingCoordinator {
     private(set) var session = TrackingSession()
     private(set) var lastError: InvalidTransition?
+    /// Distance and pace of the active run, from validated samples only.
+    private(set) var metrics = RunMetrics()
+    @ObservationIgnored private var validator = SampleValidator()
     /// The user asked to start while the permission prompt was showing.
     private(set) var isAwaitingPermission = false
 
     let location: any LocationProviding
     private let now: @Sendable () -> Date
     @ObservationIgnored private var authorizationTask: Task<Void, Never>?
+    @ObservationIgnored private var sampleTask: Task<Void, Never>?
 
     init(location: any LocationProviding, now: @escaping @Sendable () -> Date = { Date() }) {
         self.location = location
@@ -22,6 +26,12 @@ final class TrackingCoordinator {
             guard let changes = self?.location.authorizationChanges else { return }
             for await authorization in changes {
                 self?.authorizationDidChange(authorization)
+            }
+        }
+        sampleTask = Task { [weak self] in
+            guard let samples = self?.location.samples else { return }
+            for await sample in samples {
+                self?.receive(sample)
             }
         }
     }
@@ -53,6 +63,15 @@ final class TrackingCoordinator {
 
     func elapsed(at date: Date) -> TimeInterval { session.elapsed(at: date) }
 
+    /// Seconds per kilometer over the last seconds of the run; `nil` unless actively moving.
+    func currentPace(at date: Date) -> TimeInterval? {
+        session.state == .active ? metrics.currentPace(at: date) : nil
+    }
+
+    func averagePace(at date: Date) -> TimeInterval? {
+        metrics.averagePace(elapsed: elapsed(at: date))
+    }
+
     // MARK: Private
 
     private func beginRun() {
@@ -61,6 +80,8 @@ final class TrackingCoordinator {
         do {
             try fresh.start(at: now())
             session = fresh
+            metrics = RunMetrics()
+            validator = SampleValidator(segmentStart: fresh.startedAt)
             lastError = nil
             location.startUpdates()
         } catch {
@@ -80,8 +101,20 @@ final class TrackingCoordinator {
             }
             session = next
             lastError = nil
+            // Nothing is connected across a pause: the first sample after resuming starts a new segment.
+            if action == .resume { validator.beginSegment(at: date) }
         } catch {
             lastError = error
+        }
+    }
+
+    /// Raw sample from the location layer: only an active run keeps samples, and only
+    /// those that pass the filter reach the metrics.
+    private func receive(_ sample: LocationSample) {
+        guard session.state == .active else { return }
+        let startsSegment = validator.lastAccepted == nil
+        if validator.process(sample, now: now()).isAccepted {
+            metrics.add(sample, startsSegment: startsSegment)
         }
     }
 

@@ -16,6 +16,8 @@ struct TrackingView: View {
                     .font(.system(size: 64, weight: .semibold, design: .rounded).monospacedDigit())
                     .accessibilityLabel("Elapsed time")
 
+                stats(at: context.date)
+
                 controls
                 Spacer()
             }
@@ -23,6 +25,22 @@ struct TrackingView: View {
         }
         // Warm up the GPS so a fix is ready when the user taps Start.
         .onAppear { coordinator.location.startUpdates() }
+    }
+
+    private func stats(at date: Date) -> some View {
+        HStack(spacing: 24) {
+            stat("Distance (km)", DistanceFormat.kilometers(coordinator.metrics.distance))
+            stat("Pace (/km)", PaceFormat.pace(coordinator.currentPace(at: date)))
+            stat("Avg (/km)", PaceFormat.pace(coordinator.averagePace(at: date)))
+        }
+    }
+
+    private func stat(_ title: String, _ value: String) -> some View {
+        VStack(spacing: 4) {
+            Text(value).font(.title2.monospacedDigit().weight(.semibold))
+            Text(title).font(.caption).foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder private var controls: some View {

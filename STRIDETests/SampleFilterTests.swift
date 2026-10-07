@@ -3,19 +3,15 @@ import Testing
 @testable import STRIDE
 
 struct SampleFilterTests {
-    let t0 = Date(timeIntervalSince1970: 100_000)
+    private let factory = SampleFactory()
     let filter = SampleFilter()
-    /// Meters per degree of latitude for the haversine radius used in `Geodesy`.
-    let metersPerDegree = Geodesy.earthRadius * .pi / 180
+    var t0: Date { factory.t0 }
+    var metersPerDegree: Double { factory.metersPerDegree }
 
-    /// A sample `meters` north of the origin, `seconds` after `t0`.
     func sample(meters: Double = 0, at seconds: TimeInterval = 0, accuracy: Double = 5, speed: Double = -1) -> LocationSample {
-        LocationSample(
-            latitude: 40 + meters / metersPerDegree, longitude: -3, altitude: 0,
-            horizontalAccuracy: accuracy, speed: speed, timestamp: t0.addingTimeInterval(seconds)
-        )
+        factory.sample(meters: meters, at: seconds, accuracy: accuracy, speed: speed)
     }
-    func now(_ seconds: TimeInterval) -> Date { t0.addingTimeInterval(seconds) }
+    func now(_ seconds: TimeInterval) -> Date { factory.now(seconds) }
 
     // MARK: Geodesy
 
