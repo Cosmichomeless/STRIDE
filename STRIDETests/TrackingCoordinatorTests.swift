@@ -328,4 +328,67 @@ struct TrackingCoordinatorTests {
         #expect(coordinator.session.state == .active)
         #expect(coordinator.persistenceError != nil)
     }
+
+    // MARK: Background
+
+    @Test func backgroundTrackingFollowsTheRun() {
+        let (coordinator, location, clock) = make()
+        #expect(!location.isBackgroundTracking)
+        coordinator.start()
+        #expect(location.isBackgroundTracking)
+
+        clock.advance(10)
+        coordinator.pause()
+        #expect(!location.isBackgroundTracking)
+
+        coordinator.resume()
+        #expect(location.isBackgroundTracking)
+
+        coordinator.finish()
+        #expect(!location.isBackgroundTracking)
+        #expect(!location.isUpdating)
+    }
+
+    @Test func idleAppReleasesTheGPSInTheBackground() {
+        let (coordinator, location, _) = make()
+        coordinator.appDidBecomeActive()
+        #expect(location.isUpdating)
+        coordinator.appDidEnterBackground()
+        #expect(!location.isUpdating)
+    }
+
+    @Test func activeRunKeepsTrackingInTheBackground() {
+        let (coordinator, location, _) = make()
+        coordinator.start()
+        coordinator.appDidEnterBackground()
+        #expect(location.isUpdating)
+        #expect(location.isBackgroundTracking)
+        coordinator.appDidBecomeActive()
+        #expect(location.isUpdating)
+    }
+
+    @Test func pausedRunReleasesTheGPSInTheBackgroundAndResumeRestartsIt() {
+        let (coordinator, location, clock) = make()
+        coordinator.start()
+        clock.advance(5)
+        coordinator.pause()
+        coordinator.appDidEnterBackground()
+        #expect(!location.isUpdating)
+        coordinator.appDidBecomeActive()
+        coordinator.appDidEnterBackground()
+        coordinator.resume()
+        #expect(location.isUpdating)
+        #expect(location.isBackgroundTracking)
+    }
+
+    @Test func restoredActiveRunReenablesBackgroundTracking() {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let first = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        first.start()
+        let location = FakeLocationProvider()
+        _ = TrackingCoordinator(location: location, store: store, now: { clock.current })
+        #expect(location.isUpdating)
+        #expect(location.isBackgroundTracking)
+    }
 }

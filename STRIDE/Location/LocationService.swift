@@ -16,6 +16,7 @@ final class LocationService: NSObject, LocationProviding {
     @ObservationIgnored private nonisolated let authorizationContinuation: AsyncStream<LocationAuthorization>.Continuation
 
     private let manager: CLLocationManager
+    private let configuration: LocationConfiguration
     private let evaluator: GPSStatusEvaluator
 
     /// Current GPS status. Takes `now` so views can re-evaluate on a tick.
@@ -34,6 +35,7 @@ final class LocationService: NSObject, LocationProviding {
         evaluator: GPSStatusEvaluator = GPSStatusEvaluator()
     ) {
         self.manager = manager
+        self.configuration = configuration
         self.evaluator = evaluator
         self.authorization = LocationAuthorization(manager.authorizationStatus)
         // Newest wins: if the consumer is slow, stale positions are worthless.
@@ -62,6 +64,15 @@ final class LocationService: NSObject, LocationProviding {
         guard isUpdating else { return }
         manager.stopUpdatingLocation()
         isUpdating = false
+    }
+
+    @discardableResult
+    func applyBackgroundTracking(_ enabled: Bool, bundleInfo: [String: Any]? = Bundle.main.infoDictionary) -> Bool {
+        configuration.applyBackground(enabled, to: manager, bundleInfo: bundleInfo)
+    }
+
+    func setBackgroundTracking(_ enabled: Bool) {
+        applyBackgroundTracking(enabled)
     }
 
     private func refreshServicesEnabled() {

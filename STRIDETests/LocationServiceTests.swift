@@ -69,4 +69,33 @@ struct LocationServiceTests {
         try? await Task.sleep(for: .milliseconds(50))
         #expect(service.lastValidSample == nil)
     }
+
+    // MARK: Background
+
+    @Test func backgroundUpdatesAreEnabledOnlyWhenTheModeIsDeclared() {
+        let manager = CLLocationManager()
+        let service = LocationService(manager: manager)
+        let declared: [String: Any] = ["UIBackgroundModes": ["location"]]
+
+        #expect(service.applyBackgroundTracking(true, bundleInfo: declared))
+        #expect(manager.allowsBackgroundLocationUpdates)
+        #expect(manager.showsBackgroundLocationIndicator)
+
+        #expect(!service.applyBackgroundTracking(false, bundleInfo: declared))
+        #expect(!manager.allowsBackgroundLocationUpdates)
+        #expect(!manager.showsBackgroundLocationIndicator)
+
+        // Without the capability CoreLocation would raise an exception: it must be skipped.
+        #expect(!service.applyBackgroundTracking(true, bundleInfo: [:]))
+        #expect(!service.applyBackgroundTracking(true, bundleInfo: ["UIBackgroundModes": ["audio"]]))
+        #expect(!manager.allowsBackgroundLocationUpdates)
+    }
+
+    @Test func theAppBundleDeclaresTheLocationBackgroundMode() {
+        #expect(LocationConfiguration.declaresBackgroundLocation(Bundle(for: LocationService.self).infoDictionary))
+    }
+
+    @Test func systemIsNeverAskedToPauseUpdatesAutomatically() {
+        #expect(LocationConfiguration.default.pausesLocationUpdatesAutomatically == false)
+    }
 }

@@ -5,6 +5,7 @@ import SwiftUI
 struct STRIDEApp: App {
     private let container: ModelContainer
     @State private var coordinator: TrackingCoordinator
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         let container: ModelContainer
@@ -23,6 +24,15 @@ struct STRIDEApp: App {
     var body: some Scene {
         WindowGroup {
             TrackingView(coordinator: coordinator)
+                // Foreground: warm up the GPS so a fix is ready for Start. Background: release it
+                // unless a run is active (see docs/BACKGROUND.md).
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    switch phase {
+                    case .active: coordinator.appDidBecomeActive()
+                    case .background: coordinator.appDidEnterBackground()
+                    default: break
+                    }
+                }
         }
         .modelContainer(container)
     }

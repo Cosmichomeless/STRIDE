@@ -23,8 +23,6 @@ struct TrackingView: View {
             }
             .padding()
         }
-        // Warm up the GPS so a fix is ready when the user taps Start.
-        .onAppear { coordinator.location.startUpdates() }
     }
 
     private func stats(at date: Date) -> some View {

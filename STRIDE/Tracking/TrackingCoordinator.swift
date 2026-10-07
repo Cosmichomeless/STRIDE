@@ -64,7 +64,20 @@ final class TrackingCoordinator {
 
     func finish() {
         perform(.finish)
+        location.setBackgroundTracking(false)
         location.stopUpdates()
+    }
+
+    /// The app left the foreground. Only an *active* run needs the GPS in the background
+    /// (iOS keeps delivering updates); idle, paused and finished states release it (battery).
+    func appDidEnterBackground() {
+        guard session.state != .active else { return }
+        location.stopUpdates()
+    }
+
+    /// The app is in the foreground again: warm up the GPS so a fix is ready for Start.
+    func appDidBecomeActive() {
+        location.startUpdates()
     }
 
     // MARK: Derived state
@@ -105,6 +118,7 @@ final class TrackingCoordinator {
         runId = id
         lastError = nil
         persistenceError = nil
+        location.setBackgroundTracking(true)
         location.startUpdates()
     }
 
@@ -122,7 +136,16 @@ final class TrackingCoordinator {
             lastError = nil
             persist()
             // Nothing is connected across a pause: the first sample after resuming starts a new segment.
-            if action == .resume { validator.beginSegment(at: date) }
+            switch action {
+            case .resume:
+                validator.beginSegment(at: date)
+                location.setBackgroundTracking(true)
+                location.startUpdates()
+            case .pause:
+                location.setBackgroundTracking(false)
+            case .start, .finish:
+                break
+            }
         } catch {
             lastError = error
         }
@@ -194,6 +217,7 @@ final class TrackingCoordinator {
             validator = SampleValidator(segmentStart: now())
             guard session.state == .active else { return }
             if location.authorization.canTrack {
+                location.setBackgroundTracking(true)
                 location.startUpdates()
             } else {
                 perform(.pause)
