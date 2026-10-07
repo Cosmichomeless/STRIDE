@@ -19,9 +19,23 @@ struct TrackingView: View {
                 stats(at: context.date)
 
                 controls
-                Spacer()
+                routeMap
             }
             .padding()
+        }
+    }
+
+    /// Live map while recording, the framed route once finished. Hidden when there is nothing to show.
+    @ViewBuilder private var routeMap: some View {
+        switch coordinator.session.state {
+        case .active, .paused:
+            RouteMapView(route: coordinator.route, mode: .live)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+        case .finished where !coordinator.route.isEmpty:
+            RouteMapView(route: coordinator.route, mode: .completed)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+        case .idle, .finished:
+            Spacer()
         }
     }
 

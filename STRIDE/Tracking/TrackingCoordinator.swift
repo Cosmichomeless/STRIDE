@@ -10,6 +10,8 @@ final class TrackingCoordinator {
     private(set) var lastError: InvalidTransition?
     /// Distance and pace of the active run, from validated samples only.
     private(set) var metrics = RunMetrics()
+    /// Accepted points of the active run grouped in segments, for the map.
+    private(set) var route = Route()
     /// The run being recorded, or the one that just finished until a new one starts.
     private(set) var runId: UUID?
     /// The last storage failure. Tracking continues in memory when a write fails, but the
@@ -114,6 +116,7 @@ final class TrackingCoordinator {
         }
         session = fresh
         metrics = RunMetrics()
+        route = Route()
         validator = SampleValidator(segmentStart: fresh.startedAt)
         runId = id
         lastError = nil
@@ -158,6 +161,7 @@ final class TrackingCoordinator {
         let startsSegment = validator.lastAccepted == nil
         guard validator.process(sample, now: now()).isAccepted else { return }
         metrics.add(sample, startsSegment: startsSegment)
+        route.add(sample, startsSegment: startsSegment)
         guard let runId else { return }
         do {
             try store.append(TrackPoint(sample: sample, startsSegment: startsSegment), to: runId, distance: metrics.distance)
@@ -203,7 +207,8 @@ final class TrackingCoordinator {
         do {
             guard let record = try store.activeRun() else { return }
             var restored = RunMetrics()
-            for point in try store.points(of: record.id) {
+            let points = try store.points(of: record.id)
+            for point in points {
                 restored.add(point.sample, startsSegment: point.startsSegment)
             }
             session = TrackingSession(
@@ -213,6 +218,7 @@ final class TrackingCoordinator {
                 lastResumedAt: record.lastResumedAt
             )
             metrics = restored
+            route = Route(points: points)
             runId = record.id
             validator = SampleValidator(segmentStart: now())
             guard session.state == .active else { return }

@@ -391,4 +391,61 @@ struct TrackingCoordinatorTests {
         #expect(location.isUpdating)
         #expect(location.isBackgroundTracking)
     }
+
+    // MARK: Route
+
+    @Test func routeHoldsOnlyAcceptedPointsAndSplitsAtPauses() async {
+        let (coordinator, location, clock) = make()
+        #expect(coordinator.route.isEmpty)
+        coordinator.start()
+        clock.advance(1); location.emit(fix(meters: 0, clock))
+        clock.advance(1); location.emit(fix(meters: 8, clock))
+        clock.advance(1); location.emit(fix(meters: 450, clock))               // impossible jump
+        clock.advance(1); location.emit(fix(meters: 60, clock, accuracy: 80))   // imprecise
+        clock.advance(1); location.emit(fix(meters: 12, clock))
+        await settle(coordinator) { coordinator.route.pointCount >= 3 }
+        #expect(coordinator.route.segments.map(\.count) == [3])
+
+        coordinator.pause()
+        clock.advance(30)
+        coordinator.resume()
+        clock.advance(1); location.emit(fix(meters: 1_000, clock))
+        clock.advance(1); location.emit(fix(meters: 1_010, clock))
+        await settle(coordinator) { coordinator.route.pointCount >= 5 }
+        #expect(coordinator.route.segments.map(\.count) == [3, 2])
+    }
+
+    @Test func routeIsRestoredAfterRelaunchAndTheGapStartsASegment() async {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let firstLocation = FakeLocationProvider()
+        let first = TrackingCoordinator(location: firstLocation, store: store, now: { clock.current })
+        first.start()
+        for i in 0..<4 {
+            clock.advance(1)
+            firstLocation.emit(fix(meters: Double(i) * 5, clock))
+        }
+        await settle(first) { first.route.pointCount == 4 }
+
+        clock.advance(20)
+        let secondLocation = FakeLocationProvider()
+        let second = TrackingCoordinator(location: secondLocation, store: store, now: { clock.current })
+        #expect(second.route.segments.map(\.count) == [4])
+
+        clock.advance(1); secondLocation.emit(fix(meters: 400, clock))
+        await settle(second) { second.route.pointCount == 5 }
+        #expect(second.route.segments.map(\.count) == [4, 1])
+    }
+
+    @Test func newRunClearsThePreviousRoute() async {
+        let (coordinator, location, clock) = make()
+        coordinator.start()
+        clock.advance(1); location.emit(fix(meters: 0, clock))
+        await settle(coordinator) { !coordinator.route.isEmpty }
+        coordinator.finish()
+        #expect(!coordinator.route.isEmpty)   // still available to show the completed route
+
+        coordinator.start()
+        #expect(coordinator.route.isEmpty)
+    }
 }
