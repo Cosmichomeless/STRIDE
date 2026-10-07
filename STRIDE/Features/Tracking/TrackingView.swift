@@ -12,6 +12,13 @@ struct TrackingView: View {
                     onRequestAuthorization: coordinator.location.requestAuthorization
                 )
 
+                if let reason = coordinator.pauseReason {
+                    Label(reason.message, systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.orange)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 Text(DurationFormat.clock(coordinator.elapsed(at: context.date)))
                     .font(.system(size: 64, weight: .semibold, design: .rounded).monospacedDigit())
                     .accessibilityLabel("Elapsed time")
@@ -70,7 +77,9 @@ struct TrackingView: View {
             .controlSize(.large)
         case .paused:
             HStack {
-                Button("Resume", action: coordinator.resume).buttonStyle(.borderedProminent)
+                Button("Resume", action: coordinator.resume)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!coordinator.location.authorization.canTrack)
                 Button("Finish", role: .destructive, action: coordinator.finish).buttonStyle(.bordered)
             }
             .controlSize(.large)

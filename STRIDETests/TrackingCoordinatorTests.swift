@@ -448,4 +448,167 @@ struct TrackingCoordinatorTests {
         coordinator.start()
         #expect(coordinator.route.isEmpty)
     }
+
+    // MARK: Reliability
+
+    @Test func losingPermissionDuringARunPausesItAndNeverResumesByItself() async throws {
+        let (coordinator, location, clock, store) = makeWithStore()
+        coordinator.start()
+        clock.advance(1); location.emit(fix(meters: 0, clock))
+        clock.advance(1); location.emit(fix(meters: 10, clock))
+        await settle(coordinator) { coordinator.route.pointCount == 2 }
+        clock.advance(8)
+
+        location.setAuthorization(.denied)
+        await settle(coordinator) { coordinator.session.state == .paused }
+        #expect(coordinator.session.state == .paused)
+        #expect(coordinator.pauseReason == .permissionLost)
+        #expect(!location.isBackgroundTracking)
+        #expect(try store.activeRun()?.status == .paused)
+        #expect(coordinator.elapsed(at: clock.current) == 10)
+
+        // Access comes back: the run stays paused until the user resumes.
+        clock.advance(60)
+        location.setAuthorization(.whenInUse)
+        try? await Task.sleep(for: .milliseconds(50))
+        #expect(coordinator.session.state == .paused)
+        #expect(coordinator.elapsed(at: clock.current) == 10)
+    }
+
+    @Test func cannotResumeWhileAccessIsStillOff() async {
+        let (coordinator, location, clock) = make()
+        coordinator.start()
+        clock.advance(5)
+        location.setAuthorization(.denied)
+        await settle(coordinator) { coordinator.session.state == .paused }
+
+        coordinator.resume()
+        #expect(coordinator.session.state == .paused)
+
+        location.setAuthorization(.always)
+        coordinator.resume()
+        #expect(coordinator.session.state == .active)
+        #expect(coordinator.pauseReason == nil)
+        #expect(location.isBackgroundTracking)
+    }
+
+    @Test func resumingAfterPermissionLossStartsANewSegment() async {
+        let (coordinator, location, clock) = make()
+        coordinator.start()
+        clock.advance(1); location.emit(fix(meters: 0, clock))
+        clock.advance(1); location.emit(fix(meters: 10, clock))
+        await settle(coordinator) { coordinator.route.pointCount == 2 }
+
+        location.setAuthorization(.denied)
+        await settle(coordinator) { coordinator.session.state == .paused }
+        clock.advance(120)
+        location.setAuthorization(.whenInUse)
+        coordinator.resume()
+        clock.advance(1); location.emit(fix(meters: 900, clock))
+        clock.advance(1); location.emit(fix(meters: 910, clock))
+        await settle(coordinator) { coordinator.route.pointCount == 4 }
+        #expect(coordinator.route.segments.map(\.count) == [2, 2])
+        #expect(abs(coordinator.metrics.distance - 20) < 0.01)
+    }
+
+    @Test func finishingWhilePausedByPermissionLossKeepsTheRun() async throws {
+        let (coordinator, location, clock, store) = makeWithStore()
+        coordinator.start()
+        clock.advance(30)
+        location.setAuthorization(.restricted)
+        await settle(coordinator) { coordinator.session.state == .paused }
+        coordinator.finish()
+        #expect(coordinator.session.state == .finished)
+        #expect(coordinator.pauseReason == nil)
+        #expect(try store.completedRuns().count == 1)
+    }
+
+    @Test func userPauseHasNoPauseReason() {
+        let (coordinator, _, clock) = make()
+        coordinator.start()
+        clock.advance(5)
+        coordinator.pause()
+        #expect(coordinator.pauseReason == nil)
+    }
+
+    @Test func longSilenceAfterAKillPausesTheRunWhereActivityStopped() async throws {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let firstLocation = FakeLocationProvider()
+        let first = TrackingCoordinator(location: firstLocation, store: store, now: { clock.current })
+        first.start()
+        for i in 0..<4 {
+            clock.advance(1)
+            firstLocation.emit(fix(meters: Double(i) * 5, clock))
+        }
+        await settle(first) { first.route.pointCount == 4 }
+        let lastPoint = clock.current
+
+        // The app is killed and relaunched six hours later.
+        clock.advance(6 * 3_600)
+        let secondLocation = FakeLocationProvider()
+        let second = TrackingCoordinator(location: secondLocation, store: store, now: { clock.current })
+        #expect(second.session.state == .paused)
+        #expect(second.pauseReason == .interrupted(at: lastPoint))
+        #expect(second.elapsed(at: clock.current) == 4)   // only the time before the interruption
+        #expect(try store.activeRun()?.status == .paused)
+        #expect(!secondLocation.isUpdating)
+        #expect(abs(second.metrics.distance - 15) < 0.01)
+        #expect(second.route.pointCount == 4)
+
+        // The user continues: a new segment starts, nothing is connected across the gap.
+        second.resume()
+        #expect(second.pauseReason == nil)
+        clock.advance(1); secondLocation.emit(fix(meters: 5_000, clock))
+        clock.advance(1); secondLocation.emit(fix(meters: 5_010, clock))
+        await settle(second) { second.route.pointCount == 6 }
+        #expect(second.route.segments.map(\.count) == [4, 2])
+        #expect(abs(second.metrics.distance - 25) < 0.01)
+    }
+
+    @Test func interruptedRunWithoutPointsIsPausedAtItsLastResume() throws {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let first = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        first.start()
+        let startedAt = clock.current
+        clock.advance(3_600)
+        let second = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        #expect(second.session.state == .paused)
+        #expect(second.pauseReason == .interrupted(at: startedAt))
+        #expect(second.elapsed(at: clock.current) == 0)
+    }
+
+    @Test func shortRestartKeepsTheRunActive() throws {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let first = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        first.start()
+        clock.advance(TrackingCoordinator.interruptionThreshold)
+        let second = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        #expect(second.session.state == .active)
+        #expect(second.pauseReason == nil)
+    }
+
+    @Test func relaunchWithoutPermissionRecordsWhy() {
+        let clock = Clock()
+        let store = InMemoryRunStore()
+        let first = TrackingCoordinator(location: FakeLocationProvider(), store: store, now: { clock.current })
+        first.start()
+        clock.advance(10)
+        let second = TrackingCoordinator(location: FakeLocationProvider(authorization: .denied), store: store, now: { clock.current })
+        #expect(second.pauseReason == .permissionLost)
+    }
+
+    @Test func newRunClearsAnOldPauseReason() async {
+        let (coordinator, location, clock) = make()
+        coordinator.start()
+        clock.advance(5)
+        location.setAuthorization(.denied)
+        await settle(coordinator) { coordinator.session.state == .paused }
+        coordinator.finish()
+        location.setAuthorization(.whenInUse)
+        coordinator.start()
+        #expect(coordinator.pauseReason == nil)
+    }
 }
