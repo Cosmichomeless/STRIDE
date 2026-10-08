@@ -215,7 +215,7 @@ xcodebuild test -project STRIDE.xcodeproj -scheme STRIDE \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
-Design documents live in [`docs/`](docs): [Product](docs/PRODUCT.md) and [Architecture](docs/ARCHITECTURE.md).
+Design documents live in [`docs/`](docs): [Product](docs/PRODUCT.md) and [Architecture](docs/ARCHITECTURE.md), [Design](docs/DESIGN.md).
 
 ## Project Structure
 

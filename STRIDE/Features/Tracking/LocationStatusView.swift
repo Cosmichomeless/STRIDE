@@ -10,9 +10,13 @@ struct LocationStatusView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(gpsStatus.label, systemImage: "location.fill")
-                .foregroundStyle(color)
-                .font(.headline)
+            // Only the icon carries the status color: orange text would not be readable on white.
+            Label {
+                Text(gpsStatus.label)
+            } icon: {
+                Image(systemName: "location.fill").foregroundStyle(color)
+            }
+            .font(.headline)
 
             if let message = authorization.message {
                 Text(message)
@@ -22,17 +26,17 @@ struct LocationStatusView: View {
 
             if authorization.canRequest {
                 Button("Allow Location", action: onRequestAuthorization)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.brandFilled)
             } else if authorization.canOpenSettings {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.brandFilled)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .brandCard()
     }
 
     private var color: Color {
