@@ -93,7 +93,7 @@ flowchart LR
 
 ## Quality
 
-Last run on 2026-10-08, iPhone 17 Pro simulator (iOS 26.4): **147 tests in 16 suites passed** in about 2 seconds. They use Swift Testing with deterministic input and an injected clock, and cover distance, pace, GPS filtering, the run state machine, permission loss, recovery after a relaunch and background configuration. A seeded simulation compares CoreLocation configurations through the real filter and metrics ([PERFORMANCE](docs/PERFORMANCE.md)).
+Last run on 2026-10-08, iPhone 17 Pro simulator (iOS 26.4): **165 tests in 18 suites passed** in about 2 seconds. They use Swift Testing with deterministic input and an injected clock, and cover distance, pace, GPS filtering, the run state machine, permission loss, recovery after a relaunch and background configuration. A seeded simulation compares CoreLocation configurations through the real filter and metrics ([PERFORMANCE](docs/PERFORMANCE.md)).
 
 The XCUITest in `STRIDEUITests` walks through a synthetic run to capture the screenshots. It is not a regression suite: it asserts only that the app reaches each screen, it takes about 2.5 minutes, and it has its own `STRIDEScreenshots` scheme so the default test run stays fast.
 
