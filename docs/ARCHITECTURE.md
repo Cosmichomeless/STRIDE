@@ -1,7 +1,7 @@
 # STRIDE — Architecture
 
 This document defines the module boundaries and who owns which responsibility.
-The guiding rule from the README: **the UI is not the source of truth for an
+The guiding rule: **the UI is not the source of truth for an
 active run — persistent domain state is.**
 
 ## Pipeline

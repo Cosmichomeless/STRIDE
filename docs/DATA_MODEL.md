@@ -18,7 +18,7 @@ SwiftData entities live in `STRIDE/Persistence/`.
 ## LocationPoint
 
 `id`, `runId`, `latitude`, `longitude`, `altitude`, `horizontalAccuracy`,
-`speed`, `timestamp` (README fields) plus `startsSegment`.
+`speed`, `timestamp` plus `startsSegment`.
 
 `startsSegment` marks the first point after a pause or a recovery gap so
 distance is never measured across it.

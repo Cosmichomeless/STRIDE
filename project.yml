@@ -39,6 +39,16 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cosmichomeless.stride.tests
+  STRIDEUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: STRIDEUITests
+    dependencies:
+      - target: STRIDE
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cosmichomeless.stride.uitests
 schemes:
   STRIDE:
     build:
@@ -47,3 +57,11 @@ schemes:
     test:
       targets:
         - STRIDETests
+  # Separate on purpose: the walkthrough takes ~2.5 minutes and is not a regression test.
+  STRIDEScreenshots:
+    build:
+      targets:
+        STRIDE: all
+    test:
+      targets:
+        - STRIDEUITests
