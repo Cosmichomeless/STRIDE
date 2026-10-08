@@ -113,7 +113,7 @@ Not tested:
 
 ## Documentation
 
-[Product](docs/PRODUCT.md) · [Architecture](docs/ARCHITECTURE.md) · [Data model](docs/DATA_MODEL.md) · [Location architecture](docs/LOCATION_ARCHITECTURE.md) · [GPS filtering](docs/GPS_FILTERING.md) · [Background tracking](docs/BACKGROUND.md) · [Reliability](docs/RELIABILITY.md) · [Maps](docs/MAPS.md) · [Metrics](docs/METRICS.md) · [History](docs/HISTORY.md) · [Design](docs/DESIGN.md) · [Performance](docs/PERFORMANCE.md) · [Screenshots](docs/screenshots/README.md)
+[Product](docs/PRODUCT.md) · [Architecture](docs/ARCHITECTURE.md) · [Data model](docs/DATA_MODEL.md) · [Location architecture](docs/LOCATION_ARCHITECTURE.md) · [GPS filtering](docs/GPS_FILTERING.md) · [Background tracking](docs/BACKGROUND.md) · [Reliability](docs/RELIABILITY.md) · [Maps](docs/MAPS.md) · [Metrics](docs/METRICS.md) · [History](docs/HISTORY.md) · [Design](docs/DESIGN.md) · [Performance](docs/PERFORMANCE.md) · [Screenshots](docs/screenshots/README.md) · [Demo](docs/DEMO.md) · [Release notes](docs/RELEASE_NOTES.md)
 
 ## License
 
