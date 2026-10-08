@@ -12,7 +12,7 @@ In scope: location permissions, GPS status, start / pause / resume / finish,
 GPS point collection, distance, duration, current and average pace, background
 tracking, route visualization, run persistence, history and run details.
 
-Out of scope: see the README ("Out of Scope").
+Out of scope: see [Out of scope](#out-of-scope) below.
 
 ## Screens
 
@@ -126,3 +126,22 @@ If permission is revoked **during** a run:
    resumes, so no unexpected distance is added).
 
 History and Run details work without location permission.
+
+## Out of scope
+
+The first version does not include:
+
+- Social network, followers, leaderboards or challenges
+- Training plans or AI coaching
+- Apple Watch, HealthKit or heart-rate sensors
+- Strava integration
+- Backend services
+
+## Purpose
+
+STRIDE is not primarily a fitness product. It is a mobile systems project built
+around reliable native location tracking, background execution, GPS processing,
+persistence and lifecycle management. It does not try to compete with products
+such as Strava or Nike Run Club; a focused running experience is the vehicle to
+explore how a real iOS app interacts with location services and the operating
+system in the foreground, in the background and with the screen locked.

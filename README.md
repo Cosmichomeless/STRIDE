@@ -1,212 +1,34 @@
+<div align="center">
+
 # STRIDE
 
-> Native iOS running tracker focused on reliable GPS tracking, background execution, and location data processing.
+**A native iOS running tracker that records GPS runs reliably, even in the background.**
 
-## Overview
+![Swift 6](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white)
+![iOS 18+](https://img.shields.io/badge/iOS-18%2B-000000?logo=apple&logoColor=white)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-STRIDE is a native iOS running tracker built to explore CoreLocation, background location updates, GPS data processing, persistent sessions, and MapKit.
+[Try it](#how-to-try-it) · [Screenshots](#screenshots) · [Documentation](#documentation)
 
-The objective is not to compete with products such as Strava or Nike Run Club.
+<a href="#screenshots">
+  <img src="docs/screenshots/00-showcase.png" alt="STRIDE app icon next to two screens: a run in progress with distance, pace and live route, and the details of a finished run on a map" width="900">
+</a>
 
-Instead, STRIDE uses a focused running experience to explore how a real iOS application interacts with location services and the operating system while running in foreground, background, and with the screen locked.
+</div>
 
-## Goals
+STRIDE records a run with CoreLocation, filters out GPS noise, saves every point as it arrives and draws the route with MapKit. What sets it apart is that the persisted store, not the UI, is the source of truth for a run, so a run survives screen lock, backgrounding and a killed process. There is no public demo and no App Store or TestFlight build: you build it from source.
 
-The project is designed to demonstrate knowledge of:
+## What it includes
 
-- Swift
-- SwiftUI
-- CoreLocation
-- MapKit
-- Background location
-- GPS filtering
-- Geospatial calculations
-- SwiftData
-- Swift Concurrency
-- iOS lifecycle
-- Battery-aware architecture
-- Persistent application state
-- Failure recovery
+- **Live tracking:** start, pause, resume and finish a run with elapsed time, distance, current pace and average pace.
+- **Filtered GPS:** samples with poor accuracy, impossible jumps or duplicates never reach the distance or the route.
+- **Background recording:** a run keeps recording with the screen locked, using the `location` background mode only while a run is active.
+- **Recovery:** points are written one by one, so an interrupted run is restored as paused and can be resumed or finished.
+- **History and route maps:** completed runs are listed and open on a MapKit map with start and finish markers.
 
-## Tech Stack
+## How to try it
 
-- **Language:** Swift
-- **UI:** SwiftUI
-- **Location:** CoreLocation
-- **Maps:** MapKit
-- **Persistence:** SwiftData
-- **Concurrency:** Swift Concurrency
-- **Testing:** Swift Testing / XCTest
-
-The project prioritizes native Apple frameworks.
-
-## Core Tracking Pipeline
-
-```text
-CoreLocation
-      ↓
-Location Updates
-      ↓
-Validation / Filtering
-      ↓
-Tracking Session
-      ↓
-Persistence
-      ↓
-Calculations
-      ↓
-SwiftUI
-```
-
-The user interface should not be the source of truth for an active running session.
-
-Persistent domain state should determine whether a run is currently active.
-
-## MVP
-
-The initial version should support:
-
-- Location permissions
-- GPS availability/status
-- Start run
-- Pause run
-- Resume run
-- Finish run
-- GPS point collection
-- Distance calculation
-- Duration
-- Current pace
-- Average pace
-- Background tracking
-- Route visualization
-- Run persistence
-- Run history
-- Run details
-
-## Data Model
-
-### Run
-
-```text
-Run
-├── id
-├── startedAt
-├── finishedAt
-├── duration
-├── distance
-├── averagePace
-└── status
-```
-
-### LocationPoint
-
-```text
-LocationPoint
-├── id
-├── runId
-├── latitude
-├── longitude
-├── altitude
-├── horizontalAccuracy
-├── speed
-└── timestamp
-```
-
-A single run may contain hundreds or thousands of location samples.
-
-## GPS Filtering
-
-Raw GPS data cannot be assumed to be correct.
-
-For example:
-
-```text
-Point A
-   ↓
-Point B — 8m away
-   ↓
-Point C — 450m away
-   ↓
-Point D — returns near Point B
-```
-
-Point C is probably GPS noise.
-
-The filtering strategy should consider factors such as:
-
-- `horizontalAccuracy`
-- Time between samples
-- Impossibly large jumps
-- Unrealistic speeds
-- Duplicate coordinates
-- Stale locations
-
-Filtering decisions should be documented and tested.
-
-## Distance Calculation
-
-Distance should be calculated from validated location samples.
-
-Possible strategies include:
-
-- `CLLocation.distance(from:)`
-- Geodesic calculations
-- Custom filtering before aggregation
-
-The goal is to avoid accumulating significant distance errors due to GPS noise.
-
-## Background Location
-
-Background behavior is a central part of the project.
-
-STRIDE should investigate and correctly configure:
-
-- `CLLocationManager`
-- Authorization states
-- Background location updates
-- `allowsBackgroundLocationUpdates`
-- `activityType`
-- `desiredAccuracy`
-- `distanceFilter`
-- iOS background restrictions
-
-The application should respect the iOS execution model rather than trying to artificially keep the process alive.
-
-## Session Recovery
-
-A run should not exist only in memory.
-
-Conceptually:
-
-```text
-Start Run
-   ↓
-Persist Active Session
-   ↓
-Receive Locations
-   ↓
-Persist Locations
-   ↓
-App changes state
-   ↓
-Restore Active Session
-```
-
-When the app starts, it should be able to determine whether a running session was previously active.
-
-## Maps
-
-MapKit will be used to display:
-
-- Current user position
-- Recorded route
-- Route polyline
-- Completed run
-- Automatic map framing
-
-## Getting Started
-
-The Xcode project is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Requirements: macOS with Xcode (iOS 18+ simulator) and [XcodeGen](https://github.com/yonaskolb/XcodeGen). The Xcode project is generated from `project.yml` and is not committed.
 
 ```bash
 brew install xcodegen
@@ -215,174 +37,84 @@ xcodebuild test -project STRIDE.xcodeproj -scheme STRIDE \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
-Design documents live in [`docs/`](docs): [Product](docs/PRODUCT.md) and [Architecture](docs/ARCHITECTURE.md), [Design](docs/DESIGN.md).
+This generates the project and runs the unit tests in the simulator; it does not install or distribute anything. To see the app, open `STRIDE.xcodeproj` in Xcode and run the `STRIDE` scheme. The simulator has no GPS, so simulate a route with Xcode's **Debug → Simulate Location** or the simulator's **Features → Location** menu. Use any installed simulator name if `iPhone 17 Pro` is not available.
 
-## Project Structure
+## Screenshots
 
-Initial direction:
+Captured from the app in the iPhone 17 Pro simulator with a synthetic route in the Retiro park (Madrid). Click an image to open it at full size.
 
-```text
-STRIDE/
-├── App/
-├── Features/
-│   ├── Tracking/
-│   ├── History/
-│   └── RunDetails/
-├── Location/
-├── Tracking/
-├── Calculations/
-├── Persistence/
-├── Models/
-├── Maps/
-└── Tests/
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>Ready to run</b><br>
+      <a href="docs/screenshots/01-tracking-idle.png"><img src="docs/screenshots/01-tracking-idle.png" alt="Tracking tab before a run: GPS ready, timer at 0:00, distance and pace placeholders and a Start button" width="300"></a>
+    </td>
+    <td align="center" width="50%">
+      <b>Run in progress</b><br>
+      <a href="docs/screenshots/02-tracking-active.png"><img src="docs/screenshots/02-tracking-active.png" alt="Tracking tab during a run: elapsed time, distance, pace, Pause and Finish buttons and the live route on a map" width="300"></a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Run details</b><br>
+      <a href="docs/screenshots/03-run-details.png"><img src="docs/screenshots/03-run-details.png" alt="Details of a finished run: route on a map with start and finish markers, distance, duration, average pace and start and end times" width="300"></a>
+    </td>
+    <td align="center" width="50%">
+      <b>History</b><br>
+      <a href="docs/screenshots/04-history.png"><img src="docs/screenshots/04-history.png" alt="History tab listing the recorded run with its distance, duration and pace" width="300"></a>
+    </td>
+  </tr>
+</table>
+
+The screenshots are in light mode only. How to recapture them and rebuild the cover is described in [`docs/screenshots/README.md`](docs/screenshots/README.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A["CoreLocation"] -->|"AsyncStream of samples, distanceFilter 5 m"| B["LocationService"]
+    B -->|"accuracy, speed and duplicate checks"| C["SampleFilter"]
+    C -->|"each accepted point is saved first"| D[("RunStore (SwiftData)")]
+    D -->|"RunMetrics from stored points"| E["SwiftUI views"]
 ```
 
-## Development Roadmap
+`LocationService` owns `CLLocationManager`, authorization and the background configuration, and turns each `CLLocation` into a plain `LocationSample`. `TrackingCoordinator` is created by the app, not by a view: it pushes samples through `SampleFilter` and the run state machine and writes every transition and accepted point to the `RunStore` before it counts as part of the run. SwiftUI only renders that state and forwards intents (start, pause, resume, finish), so recreating a view or relaunching the process cannot lose a run.
 
-### Phase 1 — Product Definition
+## Decisions
 
-Define:
+| Decision | Why | Cost |
+|----------|-----|------|
+| `Best` accuracy with a 5 m `distanceFilter` | Keeps a usable route without one update per second; the simulation shows it halves updates compared with no filter ([PERFORMANCE](docs/PERFORMANCE.md)). | Higher GPS radio cost than coarser settings; battery was not measured, and 10 m is the next candidate to test on a device. |
+| Persisted store as the source of truth | An interrupted run is recovered from disk instead of from memory. | Every accepted point is a write, and recovery adds a state (restored as paused) the user must resolve. |
+| Local SwiftData, no backend | Nothing to deploy, works offline, keeps location data on the device. | No sync, no backup, no sharing between devices. |
+| Reject samples instead of smoothing them | Distance can only come from points that passed explicit, testable rules (30 m accuracy, 12 m/s, 1 m duplicates). | A genuinely fast or imprecise stretch is dropped, so the route can show gaps. |
+| No keep-alive tricks, `location` background mode only | Respects the iOS execution model instead of fighting it. | If iOS kills the app, the time it was not running is a gap in the route (see [BACKGROUND](docs/BACKGROUND.md)). |
+| Opaque cards on the icon's gradient | Text keeps the system contrast in light and dark mode. | Less of the system's translucent look. |
 
-- MVP
-- Running flow
-- Main screens
-- User experience
+## Quality
 
-### Phase 2 — Architecture
+Last run on 2026-10-08, iPhone 17 Pro simulator (iOS 26.4): **147 tests in 16 suites passed** in about 2 seconds. They use Swift Testing with deterministic input and an injected clock, and cover distance, pace, GPS filtering, the run state machine, permission loss, recovery after a relaunch and background configuration. A seeded simulation compares CoreLocation configurations through the real filter and metrics ([PERFORMANCE](docs/PERFORMANCE.md)).
 
-Define:
+The XCUITest in `STRIDEUITests` walks through a synthetic run to capture the screenshots. It is not a regression suite: it asserts only that the app reaches each screen, it takes about 2.5 minutes, and it has its own `STRIDEScreenshots` scheme so the default test run stays fast.
 
-- Location architecture
-- Session lifecycle
-- Persistence boundaries
+Not tested:
 
-### Phase 3 — Data Model
+- **Physical device.** Real GPS error, background suspension, kills by the OS and permission changes from Settings were not exercised; the simulator does not behave like iOS on hardware.
+- **Battery.** No measurement was made. The manual protocol in [PERFORMANCE](docs/PERFORMANCE.md#manual-protocol-on-a-device--not-executed) has not been run.
+- **CI.** No automated pipeline exists; tests are run locally.
 
-Design:
+## Limits
 
-- Runs
-- Location points
-- Active session state
+- No App Store, TestFlight or downloadable build; it is built from source.
+- Foreground and background recording is verified with deterministic tests, not with outdoor runs.
+- If the process is killed, STRIDE does not relaunch itself (no significant-location-change or region monitoring), so a gap appears until the user opens the app.
+- Out of scope: social features, Apple Watch, HealthKit, heart-rate sensors, third-party integrations and any backend ([PRODUCT](docs/PRODUCT.md)).
+- English-only interface text; screenshots in light mode only.
 
-### Phase 4 — Location Service
+## Documentation
 
-Implement:
+[Product](docs/PRODUCT.md) · [Architecture](docs/ARCHITECTURE.md) · [Data model](docs/DATA_MODEL.md) · [GPS filtering](docs/GPS_FILTERING.md) · [Background tracking](docs/BACKGROUND.md) · [Reliability](docs/RELIABILITY.md) · [Maps](docs/MAPS.md) · [Metrics](docs/METRICS.md) · [History](docs/HISTORY.md) · [Design](docs/DESIGN.md) · [Performance](docs/PERFORMANCE.md) · [Screenshots](docs/screenshots/README.md)
 
-- Permissions
-- CLLocationManager
-- Location stream
+## License
 
-### Phase 5 — Tracking Session
-
-Implement:
-
-- Start
-- Pause
-- Resume
-- Finish
-- Timer
-
-### Phase 6 — Distance Calculation
-
-Implement validated distance calculation.
-
-### Phase 7 — GPS Filtering
-
-Design and test location filtering.
-
-### Phase 8 — Persistence
-
-Persist:
-
-- Active sessions
-- Location points
-- Completed runs
-
-### Phase 9 — Background Tracking
-
-Implement and test background behavior.
-
-### Phase 10 — MapKit
-
-Implement:
-
-- Route polyline
-- Current location
-- Completed route
-
-### Phase 11 — Run History
-
-Build history and details screens.
-
-### Phase 12 — Reliability
-
-Test:
-
-- Screen locking
-- Backgrounding
-- App restart
-- Poor GPS
-- Permission changes
-- Interrupted runs
-
-### Phase 13 — Battery Optimization
-
-Analyze the relationship between:
-
-```text
-Accuracy ↔ Update Frequency ↔ Battery Usage
-```
-
-### Phase 14 — Testing
-
-Add tests for:
-
-- Distance
-- Pace
-- GPS filtering
-- Session state
-
-### Phase 15 — Documentation
-
-Document:
-
-- Location architecture
-- GPS filtering
-- Background behavior
-- Trade-offs
-
-### Phase 16 — Release
-
-Prepare final demo and release.
-
-## Out of Scope
-
-The initial version will not include:
-
-- Social network
-- Followers
-- Leaderboards
-- Challenges
-- Training plans
-- Apple Watch
-- HealthKit
-- Heart-rate sensors
-- Strava integration
-- AI coaching
-- Backend services
-
-## Project Philosophy
-
-STRIDE is not primarily a fitness product.
-
-It is a mobile systems project built around:
-
-> Reliable native location tracking, background execution, GPS processing, persistence, and lifecycle management.
-
-## Status
-
-🚧 **In development**
-
-Current stage:
-
-**Phase 1 — Product Definition**
+[MIT](LICENSE) © 2026 David Rodríguez

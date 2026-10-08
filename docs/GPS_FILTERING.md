@@ -17,7 +17,7 @@ Checked in this order; the first failing rule rejects the sample.
 | 5 | `impossibleReportedSpeed` | `speed > maxSpeed` | **12 m/s** | The device-reported speed is impossible for running. Negative speed means "unknown" and is ignored. |
 | 6 | `outOfOrder` | `timestamp <= previous.timestamp` | — | Non-increasing time makes speed meaningless. |
 | 7 | `duplicate` | distance to previous `< minDistance` | **1 m** | Standing still produces jitter that would accumulate fake distance. |
-| 8 | `impossibleJump` | `distance / dt > maxSpeed` | **12 m/s** | The "Point C, 450 m away" case from the README. |
+| 8 | `impossibleJump` | `distance / dt > maxSpeed` | **12 m/s** | A point 450 m away between two points 8 m apart is noise. |
 
 `maxSpeed = 12 m/s` is 43 km/h (a 100 m world-record sprint is ~12.4 m/s), so no
 real runner is rejected while car-speed GPS glitches are.
@@ -65,4 +65,4 @@ quality can be inspected without storing rejected points.
 
 `SampleFilterTests` uses deterministic sequences built from a known speed
 (no CoreLocation involved): every rule, the exact boundary of each threshold,
-the README noise scenario, recovery after a jump and segment starts.
+the 450 m jump scenario, recovery after a jump and segment starts.
