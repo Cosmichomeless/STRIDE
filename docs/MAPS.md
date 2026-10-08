@@ -34,6 +34,11 @@ Routes crossing the antimeridian are not handled (not a running use case).
 Single-point segments draw no line. The map offers the user-location button so the
 user can re-center after panning.
 
+## Look
+
+The route is drawn as a crimson line over a wider white casing, and the start and finish
+are white rings with a crimson dot, as in the app icon. See [DESIGN.md](DESIGN.md).
+
 ## Verification status
 
 Route grouping, rebuilding and framing are covered by deterministic tests

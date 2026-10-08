@@ -13,15 +13,19 @@ struct RunDetailsView: View {
             if let run {
                 VStack(spacing: 16) {
                     RouteMapView(route: route, mode: .completed)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .brandMapFrame()
                     stats(run)
                     times(run)
                 }
                 .padding()
             } else {
                 ContentUnavailableView("Run not found", systemImage: "questionmark.folder")
+                    .padding()
+                    .brandCard()
+                    .padding()
             }
         }
+        .brandScreen()
         .navigationTitle(run?.startedAt.formatted(date: .abbreviated, time: .omitted) ?? "Run")
         .navigationBarTitleDisplayMode(.inline)
         .task(id: runId) {
@@ -36,6 +40,9 @@ struct RunDetailsView: View {
             stat("Duration", RunSummary.duration(run))
             stat("Avg (/km)", PaceFormat.pace(run.averagePace))
         }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .brandCard()
     }
 
     private func times(_ run: RunRecord) -> some View {
@@ -48,13 +55,16 @@ struct RunDetailsView: View {
         }
         .font(.subheadline)
         .foregroundStyle(.secondary)
+        .padding()
+        .brandCard()
     }
 
     private func stat(_ title: String, _ value: String) -> some View {
         VStack(spacing: 4) {
-            Text(value).font(.title2.monospacedDigit().weight(.semibold))
+            Text(value).font(.title2.monospacedDigit().weight(.bold))
             Text(title).font(.caption).foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
     }
 }

@@ -8,12 +8,14 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $navigation.selection) {
             Tab("Tracking", systemImage: "figure.run", value: AppTab.tracking) {
-                TrackingView(coordinator: coordinator)
+                TrackingView(coordinator: coordinator).tint(BrandPalette.accent)
             }
             Tab("History", systemImage: "list.bullet", value: AppTab.history) {
-                HistoryView(history: history, navigation: navigation)
+                HistoryView(history: history, navigation: navigation).tint(BrandPalette.accent)
             }
         }
+        // The tab bar floats over the gradient, so it has its own tint; the content keeps the accent.
+        .tint(BrandPalette.tabTint)
         .onChange(of: coordinator.session.state) { _, state in
             guard state == .finished, let id = coordinator.runId else { return }
             history.reload()

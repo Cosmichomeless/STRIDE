@@ -22,13 +22,17 @@ struct RouteMapView: View {
             if mode == .live { UserAnnotation() }
             ForEach(Array(route.segments.enumerated()), id: \.offset) { _, segment in
                 if segment.count > 1 {
-                    MapPolyline(coordinates: segment.map(\.clCoordinate))
-                        .stroke(.blue, style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round))
+                    // A white casing under the line, like the thick white stroke of the app icon.
+                    let coordinates = segment.map(\.clCoordinate)
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(.white, style: StrokeStyle(lineWidth: 10, lineCap: .round, lineJoin: .round))
+                    MapPolyline(coordinates: coordinates)
+                        .stroke(BrandPalette.crimson.color, style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
                 }
             }
             if mode == .completed {
-                if let start = route.first { Marker("Start", systemImage: "flag.fill", coordinate: start.clCoordinate).tint(.green) }
-                if let end = route.last { Marker("Finish", systemImage: "flag.checkered", coordinate: end.clCoordinate).tint(.red) }
+                if let start = route.first { Annotation("Start", coordinate: start.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
+                if let end = route.last { Annotation("Finish", coordinate: end.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
             }
         }
         .mapControls {
