@@ -19,6 +19,7 @@ targets:
     info:
       path: STRIDE/Info.plist
       properties:
+        ITSAppUsesNonExemptEncryption: false
         # Required for allowsBackgroundLocationUpdates; without it CoreLocation raises an exception.
         UIBackgroundModes: [location]
     settings:
