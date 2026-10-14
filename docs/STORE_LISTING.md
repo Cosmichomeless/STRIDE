@@ -2,7 +2,39 @@
 
 Translated listing copy for the languages the app supports (see [LOCALIZATION.md](LOCALIZATION.md)). It is **not uploaded anywhere**: paste it into App Store Connect, one localization per language. Limits: name 30, subtitle 30, keywords 100 characters.
 
-The app name is `STRIDE` in every language.
+The app name is `STRIDE` in every language. **Primary language: Spanish (Spain).** The app is meant for every country and region; the Spanish text also serves Latin America, and the other five languages are added as extra localizations.
+
+## Shared fields
+
+| Field | Value |
+| --- | --- |
+| Price | Free, no in-app purchases |
+| Primary category | Health & Fitness (secondary: Sports) |
+| Support URL | https://cosmichomeless.github.io/STRIDE/support/ |
+| Privacy policy URL | https://cosmichomeless.github.io/STRIDE/privacy/ |
+| Marketing URL | none |
+| Copyright | 2026 David Rodríguez |
+| Availability | All countries and regions |
+| Privacy "nutrition labels" | Data Not Collected |
+| Review contact | David Rodríguez, same email as support (phone only in App Store Connect, not in the repository) |
+| EU trader (DSA) | Not a trader: personal, non-commercial project (confirm in App Store Connect) |
+
+## Español (es) — primary
+
+**Subtitle** (21): Registra tus carreras
+
+**Keywords** (85): `correr,carrera,gps,ritmo,running,distancia,ruta,entrenamiento,privacidad,sin conexión`
+
+**Description**
+
+STRIDE registra tus carreras con GPS: ruta, distancia, tiempo y ritmo, en vivo sobre un mapa. Sin cuenta, sin anuncios, sin seguimiento: tus carreras se quedan en tu iPhone.
+
+- Mapa de la ruta, ritmo y distancia en vivo
+- Sigue registrando con la pantalla apagada
+- Pausa y reanuda; se recupera si la app se cierra
+- Historial de cada carrera con su ruta
+- Kilómetros o millas, objetivos, modo claro y oscuro
+- Guarda tus carreras en Apple Salud
 
 ## English (en)
 
@@ -19,22 +51,7 @@ STRIDE records your runs with GPS: route, distance, time and pace, live on a map
 - Pause and resume; recovers if the app closes
 - History of every run with its route
 - Kilometers or miles, run goals, light and dark mode
-
-## Español (es)
-
-**Subtitle** (21): Registra tus carreras
-
-**Keywords** (85): `correr,carrera,gps,ritmo,running,distancia,ruta,entrenamiento,privacidad,sin conexión`
-
-**Description**
-
-STRIDE registra tus carreras con GPS: ruta, distancia, tiempo y ritmo, en vivo sobre un mapa. Sin cuenta, sin anuncios, sin seguimiento: tus carreras se quedan en tu iPhone.
-
-- Mapa de la ruta, ritmo y distancia en vivo
-- Sigue registrando con la pantalla apagada
-- Pausa y reanuda; se recupera si la app se cierra
-- Historial de cada carrera con su ruta
-- Kilómetros o millas, objetivos, modo claro y oscuro
+- Saves your runs to Apple Health
 
 ## Français (fr)
 
@@ -51,6 +68,7 @@ STRIDE enregistre vos courses avec le GPS : parcours, distance, temps et allure,
 - Pause et reprise ; récupération si l’app se ferme
 - Historique de chaque course avec son parcours
 - Kilomètres ou miles, objectifs, mode clair et sombre
+- Enregistre vos courses dans Santé
 
 ## Deutsch (de)
 
@@ -67,6 +85,7 @@ STRIDE zeichnet deine Läufe per GPS auf: Strecke, Distanz, Zeit und Pace, live 
 - Pausieren und fortsetzen; Wiederherstellung nach App-Ende
 - Verlauf jedes Laufs mit seiner Strecke
 - Kilometer oder Meilen, Laufziele, heller und dunkler Modus
+- Speichert deine Läufe in Apple Health
 
 ## Italiano (it)
 
@@ -83,6 +102,7 @@ STRIDE registra le tue corse con il GPS: percorso, distanza, tempo e ritmo, in d
 - Pausa e ripresa; si ripristina se l’app si chiude
 - Cronologia di ogni corsa con il suo percorso
 - Chilometri o miglia, obiettivi, modalità chiara e scura
+- Salva le tue corse in Salute
 
 ## Português (pt-BR)
 
@@ -99,3 +119,4 @@ O STRIDE registra suas corridas com GPS: percurso, distância, tempo e ritmo, ao
 - Pause e retome; recupera se o app for fechado
 - Histórico de cada corrida com seu percurso
 - Quilômetros ou milhas, metas, modo claro e escuro
+- Salva suas corridas no Saúde
