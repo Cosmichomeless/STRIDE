@@ -10,6 +10,10 @@ FONT = "/System/Library/Fonts/SFNSRounded.ttf"
 TEXT = {
     "es": ("STRIDE", "Registra tus carreras.", "Sin cuentas. Sin rastreo."),
     "en": ("STRIDE", "Track your runs.", "No accounts. No tracking."),
+    "fr": ("STRIDE", "Enregistrez vos courses.", "Sans compte. Sans suivi."),
+    "de": ("STRIDE", "Zeichne deine Läufe auf.", "Ohne Konto. Ohne Tracking."),
+    "it": ("STRIDE", "Registra le tue corse.", "Zero account. Zero tracking."),
+    "pt-BR": ("STRIDE", "Registre suas corridas.", "Sem conta. Sem rastreio."),
 }
 SIZES = [(3840, 1646), (5244, 2950)]
 

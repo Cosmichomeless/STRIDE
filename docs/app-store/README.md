@@ -5,8 +5,8 @@ The images uploaded to App Store Connect for STRIDE 1.0, at the exact size and c
 | Folder | Content |
 | --- | --- |
 | `screenshots/<lang>/` | The four screenshots of each language (`es`, `en`, `fr`, `de`, `it`, `pt-BR`), 1320x2868 (iPhone 6.9"), uploaded as `APP_IPHONE_67`. `01-tracking-idle`, `02-tracking-active`, `03-run-details`, `04-history`. |
-| `header/` | Product page header, Spanish and English, at 3840x1646 and 5244x2950. |
-| `search/` | Search results image, Spanish and English, at 5244x2950, 3840x2560 and 1920x1280. |
+| `header/` | Product page header in all six languages, at 3840x1646 and 5244x2950. |
+| `search/` | Search results image in all six languages, at 5244x2950, 3840x2560 and 1920x1280. |
 
 The screenshots are the full-resolution originals, not the optimized copies in [`../screenshots/`](../screenshots/README.md) that the README uses. They come from the synthetic run described there (a loop through the Retiro park), with the status bar fixed at 9:41.
 
