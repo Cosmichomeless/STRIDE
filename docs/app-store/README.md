@@ -36,3 +36,7 @@ python3 docs/app-store/make_search.py
 ```
 
 Both read the app icon and the screenshots in this folder and are deterministic (same bytes on every run). They use the macOS font `SF NS Rounded`, so they run on a Mac. The text of each language is the `TEXT` table at the top of each script; add a language there to get its images.
+
+## Tools
+
+`tools/asc_api.py` (a minimal App Store Connect API client) and `tools/submit_review.py` (sends a version to review). Both read the key from the environment; see [`../RELEASE_GUIDE.md`](../RELEASE_GUIDE.md) for the whole procedure.
