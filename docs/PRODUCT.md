@@ -133,7 +133,7 @@ The first version does not include:
 
 - Social network, followers, leaderboards or challenges
 - Training plans or AI coaching
-- Apple Watch, HealthKit or heart-rate sensors
+- Apple Watch, reading Health data or heart-rate sensors (saving finished runs to Apple Health is in: [HEALTH](HEALTH.md))
 - Strava integration
 - Backend services
 

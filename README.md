@@ -108,7 +108,7 @@ Not tested:
 - No App Store, TestFlight or downloadable build; it is built from source.
 - Foreground and background recording is verified with deterministic tests, not with outdoor runs.
 - If the process is killed, STRIDE does not relaunch itself (no significant-location-change or region monitoring), so a gap appears until the user opens the app.
-- Out of scope: social features, Apple Watch, HealthKit, heart-rate sensors, third-party integrations and any backend ([PRODUCT](docs/PRODUCT.md)).
+- Finished runs can be saved to Apple Health (write only: distance, duration and route; see docs/HEALTH.md). Out of scope: social features, Apple Watch, reading Health data, heart-rate sensors, third-party integrations and any backend ([PRODUCT](docs/PRODUCT.md)).
 - Screenshots are in English and light mode only; the interface itself is localized (see docs/LOCALIZATION.md).
 
 ## Documentation

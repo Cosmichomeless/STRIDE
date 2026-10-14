@@ -7,6 +7,7 @@ struct STRIDEApp: App {
     @State private var coordinator: TrackingCoordinator
     @State private var history: HistoryModel
     @State private var settings: AppSettings
+    @State private var healthSync: HealthSync
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -22,20 +23,26 @@ struct STRIDEApp: App {
            let bundleId = Bundle.main.bundleIdentifier {
             UserDefaults.standard.removePersistentDomain(forName: bundleId)
         }
-        _settings = State(initialValue: AppSettings())
+        let settings = AppSettings()
+        _settings = State(initialValue: settings)
         let store = SwiftDataRunStore(container: container)
+        let health: any HealthWriting = ProcessInfo.processInfo.arguments.contains("-uitest-fake-health")
+            ? StubHealthWriter() : HealthKitWriter()
+        _healthSync = State(initialValue: HealthSync(health: health, settings: settings, store: store))
         _coordinator = State(initialValue: TrackingCoordinator(location: LocationService(), store: store))
         _history = State(initialValue: HistoryModel(store: store))
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView(coordinator: coordinator, history: history, settings: settings)
+            RootView(coordinator: coordinator, history: history, settings: settings, healthSync: healthSync)
                 // Foreground: warm up the GPS so a fix is ready for Start. Background: release it
                 // unless a run is active (see docs/BACKGROUND.md).
                 .onChange(of: scenePhase, initial: true) { _, phase in
                     switch phase {
-                    case .active: coordinator.appDidBecomeActive()
+                    case .active:
+                        coordinator.appDidBecomeActive()
+                        healthSync.refreshAccess()
                     case .background: coordinator.appDidEnterBackground()
                     default: break
                     }

@@ -295,6 +295,42 @@
         }
       }
     },
+    "Couldn't save the run to Health." : {
+      "comment" : "Shown when writing the run to the Apple Health app failed",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Lauf konnte nicht in Health gesichert werden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar la carrera en Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’enregistrer la course dans Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile salvare la corsa in Salute."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível salvar a corrida no Saúde."
+          }
+        }
+      }
+    },
     "Dark" : {
       "comment" : "Appearance option",
       "extractionState" : "manual",
@@ -507,6 +543,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finalizar"
+          }
+        }
+      }
+    },
+    "Finished runs are saved to Health with their distance, duration and route. STRIDE never reads your Health data." : {
+      "comment" : "Footnote of the Health card",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beendete Läufe werden mit Distanz, Dauer und Strecke in Health gesichert. STRIDE liest deine Health-Daten nie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las carreras terminadas se guardan en Salud con su distancia, duración y ruta. STRIDE nunca lee tus datos de Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les courses terminées sont enregistrées dans Santé avec leur distance, leur durée et leur parcours. STRIDE ne lit jamais vos données Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le corse terminate vengono salvate in Salute con distanza, durata e percorso. STRIDE non legge mai i tuoi dati di Salute."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As corridas finalizadas são salvas no Saúde com distância, duração e percurso. O STRIDE nunca lê seus dados do Saúde."
           }
         }
       }
@@ -759,6 +831,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tempo da meta"
+          }
+        }
+      }
+    },
+    "Health" : {
+      "comment" : "Settings card title for saving runs to the Apple Health app (use the name of that app in the language)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Santé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salute"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saúde"
+          }
+        }
+      }
+    },
+    "Health isn't available on this device." : {
+      "comment" : "Footnote of the Health card when the device has no Health data",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health ist auf diesem Gerät nicht verfügbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salud no está disponible en este dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Santé n’est pas disponible sur cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salute non è disponibile su questo dispositivo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Saúde não está disponível neste dispositivo."
           }
         }
       }
@@ -1591,6 +1735,42 @@
         }
       }
     },
+    "STRIDE can't save to Health. Allow it in the Health settings of your iPhone." : {
+      "comment" : "Shown when the user has not allowed writing to the Apple Health app",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE kann nicht in Health sichern. Erlaube es in den Health-Einstellungen deines iPhone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE no puede guardar en Salud. Permítelo en los ajustes de Salud de tu iPhone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE ne peut pas enregistrer dans Santé. Autorisez-le dans les réglages Santé de votre iPhone."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE non può salvare in Salute. Consentilo nelle impostazioni di Salute del tuo iPhone."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O STRIDE não pode salvar no Saúde. Permita nos ajustes do Saúde no seu iPhone."
+          }
+        }
+      }
+    },
     "STRIDE has no account and sends your runs nowhere." : {
       "comment" : "Footnote of the About card",
       "extractionState" : "manual",
@@ -1623,6 +1803,114 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O STRIDE não tem conta e não envia suas corridas para lugar nenhum."
+          }
+        }
+      }
+    },
+    "Save runs to Health" : {
+      "comment" : "Switch that sends finished runs to the Apple Health app",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Läufe in Health sichern"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar carreras en Salud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer les courses dans Santé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva le corse in Salute"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar corridas no Saúde"
+          }
+        }
+      }
+    },
+    "Saved to Health" : {
+      "comment" : "Shown on a run that was written to the Apple Health app",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Health gesichert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardada en Salud"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrée dans Santé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvata in Salute"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva no Saúde"
+          }
+        }
+      }
+    },
+    "Saved to Health without the route" : {
+      "comment" : "Shown when the run is in Health but its route could not be added",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Health gesichert, aber ohne Strecke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardada en Salud sin la ruta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrée dans Santé sans le parcours"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvata in Salute senza il percorso"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva no Saúde sem o percurso"
           }
         }
       }
@@ -1947,6 +2235,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rastreamento"
+          }
+        }
+      }
+    },
+    "Try again" : {
+      "comment" : "Button that repeats a failed save",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut versuchen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riprova"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentar novamente"
           }
         }
       }

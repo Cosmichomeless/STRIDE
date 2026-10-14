@@ -5,7 +5,7 @@ import XCTest
 final class SettingsUITests: XCTestCase {
     private func launch(reset: Bool) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"] + (reset ? ["-uitest-reset-settings"] : [])
+        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-uitest-fake-health"] + (reset ? ["-uitest-reset-settings"] : [])
         app.launch()
         return app
     }
@@ -62,13 +62,32 @@ final class SettingsUITests: XCTestCase {
         XCTAssertEqual(increment.value as? String, "35 minutes")
     }
 
+    /// Saving to Health is on for a new install and the choice is kept. (The system permission sheet cannot be
+    /// driven from a UI test, so the app uses a stand-in for Health here.)
+    @MainActor
+    func testSaveToHealthIsOnByDefaultAndKept() throws {
+        var app = launch(reset: true)
+        app.tabBars.buttons["Settings"].tap()
+        let toggle = app.switches["saveToHealthToggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(toggle.value as? String, "1")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "0")
+
+        app.terminate()
+        app = launch(reset: false)
+        app.tabBars.buttons["Settings"].tap()
+        XCTAssertTrue(app.switches["saveToHealthToggle"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.switches["saveToHealthToggle"].value as? String, "0")
+    }
+
     /// At the largest accessibility text size every tab still shows its controls and the system's
     /// audit finds no clipped or unlabeled elements.
     @MainActor
     func testLargestAccessibilityTextSizeKeepsEveryScreenUsable() throws {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-uitest-reset-settings",
+            "-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-uitest-reset-settings", "-uitest-fake-health",
             "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL",
         ]
         app.launch()

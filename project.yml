@@ -22,6 +22,10 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         # Required for allowsBackgroundLocationUpdates; without it CoreLocation raises an exception.
         UIBackgroundModes: [location]
+    entitlements:
+      path: STRIDE/STRIDE.entitlements
+      properties:
+        com.apple.developer.healthkit: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cosmichomeless.stride
@@ -30,6 +34,8 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "STRIDE uses your location to record the route, distance and pace of your runs."
+        # STRIDE only writes to Health, so there is no NSHealthShareUsageDescription: it reads nothing.
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "STRIDE saves your finished runs to Health with their distance, duration and route."
   STRIDETests:
     type: bundle.unit-test
     platform: iOS

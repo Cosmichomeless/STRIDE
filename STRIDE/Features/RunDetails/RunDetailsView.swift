@@ -5,6 +5,7 @@ struct RunDetailsView: View {
     let history: HistoryModel
     let runId: UUID
     @Environment(AppSettings.self) private var settings
+    @Environment(HealthSync.self) private var healthSync
 
     @State private var run: RunRecord?
     @State private var route = Route()
@@ -19,6 +20,7 @@ struct RunDetailsView: View {
                             .containerRelativeFrame(.vertical) { height, _ in max(260, height * 0.45) }
                         stats(run)
                         times(run)
+                        healthStatus
                     }
                     .padding()
                 }
@@ -35,6 +37,38 @@ struct RunDetailsView: View {
         .task(id: runId) {
             run = history.run(id: runId)
             route = history.route(of: runId)
+        }
+    }
+
+    /// How saving this run to Health went; only known for a run finished during this launch.
+    @ViewBuilder private var healthStatus: some View {
+        if let outcome = healthSync.outcomes[runId] {
+            VStack(alignment: .leading, spacing: 12) {
+                Label {
+                    Text(Self.message(for: outcome))
+                } icon: {
+                    Image(systemName: outcome.isSaved ? "heart.fill" : "exclamationmark.triangle.fill")
+                        .foregroundStyle(outcome.isSaved ? .pink : .orange)
+                }
+                .font(.subheadline)
+                if outcome == .failed {
+                    Button("Try again") { Task { await healthSync.runFinished(runId) } }
+                        .buttonStyle(.brandFilled)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .brandCard()
+            .accessibilityIdentifier("healthStatus")
+        }
+    }
+
+    private static func message(for outcome: HealthSync.Outcome) -> LocalizedStringResource {
+        switch outcome {
+        case .saved: "Saved to Health"
+        case .savedWithoutRoute: "Saved to Health without the route"
+        case .accessDenied: "STRIDE can't save to Health. Allow it in the Health settings of your iPhone."
+        case .failed: "Couldn't save the run to Health."
         }
     }
 
