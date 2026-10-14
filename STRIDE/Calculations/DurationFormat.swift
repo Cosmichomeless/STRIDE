@@ -9,4 +9,9 @@ enum DurationFormat {
             ? String(format: "%d:%02d:%02d", h, m, s)
             : String(format: "%d:%02d", m, s)
     }
+
+    /// A duration as a goal, e.g. `30 min` or `1 h 30 min`.
+    static func goal(_ seconds: TimeInterval, locale: Locale = .current) -> String {
+        Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated).locale(locale))
+    }
 }

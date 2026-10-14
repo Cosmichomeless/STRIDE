@@ -75,15 +75,15 @@ struct HistoryTests {
 
     @Test func rowSummaryShowsDistanceDurationAndPace() {
         let run = finished(start: 0, distance: 5_200, duration: 1_690)
-        #expect(RunSummary.distance(run) == "5.20 km")
+        #expect(RunSummary.distance(run, locale: en) == "5.20 km")
         #expect(RunSummary.duration(run) == "28:10")
         #expect(RunSummary.pace(run) == "5:25 /km")
-        #expect(RunSummary.line(run) == "5.20 km · 28:10 · 5:25 /km")
+        #expect(RunSummary.line(run, locale: en) == "5.20 km · 28:10 · 5:25 /km")
     }
 
     @Test func runWithoutDistanceShowsNoPace() {
         let run = finished(start: 0, distance: 0, duration: 60)
-        #expect(RunSummary.line(run) == "0.00 km · 1:00 · -- /km")
+        #expect(RunSummary.line(run, locale: en) == "0.00 km · 1:00 · -- /km")
     }
 
     @Test func appOpensOnTrackingAndFinishingLandsOnTheRunDetails() {

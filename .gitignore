@@ -153,3 +153,6 @@ vite.config.ts.timestamp-*
 xcuserdata/
 DerivedData/
 .build/
+
+# macOS
+.DS_Store

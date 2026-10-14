@@ -3,6 +3,7 @@ import SwiftUI
 struct HistoryView: View {
     let history: HistoryModel
     @Bindable var navigation: AppNavigation
+    @Environment(AppSettings.self) private var settings
 
     var body: some View {
         NavigationStack(path: $navigation.historyPath) {
@@ -49,12 +50,14 @@ struct HistoryView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(run.startedAt.formatted(date: .abbreviated, time: .shortened))
                                 .font(.headline)
-                            Text(RunSummary.line(run))
+                            Text(RunSummary.line(run, unit: settings.distanceUnit))
                                 .font(.subheadline.monospacedDigit())
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .accessibilityElement(children: .combine)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(run.startedAt.formatted(date: .abbreviated, time: .shortened)))
+                    .accessibilityValue(RunSummary.spokenLine(run, unit: settings.distanceUnit))
                 }
                 .listRowBackground(
                     BrandCardShape(cornerRadius: 16)

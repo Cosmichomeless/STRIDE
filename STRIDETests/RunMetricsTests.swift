@@ -131,8 +131,8 @@ struct PaceFormatTests {
     }
 
     @Test func formatsDistanceInKilometers() {
-        #expect(DistanceFormat.kilometers(0) == "0.00")
-        #expect(DistanceFormat.kilometers(1_250) == "1.25")
-        #expect(DistanceFormat.kilometers(-3) == "0.00")
+        #expect(DistanceFormat.kilometers(0, locale: en) == "0.00")
+        #expect(DistanceFormat.kilometers(1_250, locale: en) == "1.25")
+        #expect(DistanceFormat.kilometers(-3, locale: en) == "0.00")
     }
 }
