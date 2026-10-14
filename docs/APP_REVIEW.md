@@ -24,7 +24,7 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 > to Health** back on; the switch is on by default and the app works the same without Health access.
 >
 > **Data.** Runs are stored only on the device. No analytics, advertising, tracking or third-party SDKs.
-> Privacy policy: <https://github.com/Cosmichomeless/STRIDE/blob/main/docs/privacy.md>
+> Privacy policy: <https://cosmichomeless.github.io/STRIDE/privacy/>
 
 ## Checklist
 
@@ -34,9 +34,9 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 | Privacy policy (EN/ES) and support page | Written: `docs/privacy.md`, `docs/support.md` |
 | Policy and support linked inside the app (Settings › About) | Done |
 | Policy and support URL in App Store Connect | **Open.** Needs App Store Connect |
-| Enable GitHub Pages so the URLs are not raw repository pages | **Open.** Repository setting; then change `AppLinks` and App Store Connect together |
-| HealthKit: `com.apple.developer.healthkit` entitlement and `NSHealthUpdateUsageDescription` (no Share key: nothing is read) | Done in `project.yml`. **Open:** HealthKit must be enabled for the App ID in the developer account (automatic signing does it with a team); not verifiable without one |
-| Health writing checked on a real iPhone (permission sheet, workout and route in the Health app) | **Open.** Needs a physical iPhone; the logic is covered by unit tests with a double |
+| GitHub Pages serves the policy and support at `https://cosmichomeless.github.io/STRIDE/privacy/` and `/support/` | Pages enabled from `main` › `/docs`; the app links point there. **Open:** check both URLs load once the PRs are merged, then use them in App Store Connect |
+| HealthKit: `com.apple.developer.healthkit` entitlement and `NSHealthUpdateUsageDescription` (no Share key: nothing is read) | Done in `project.yml`. HealthKit is enabled for the App ID and the app runs on a real iPhone |
+| Health writing checked on a real iPhone (permission sheet, workout and route in the Health app) | Workout saved and visible in Health on a real iPhone; the logic is also covered by unit tests with a double. Check the route in the workout's map before submitting |
 | Review notes above | Written; paste in App Store Connect |
 | Video of background recording with the screen locked | **Open.** Needs a physical iPhone and an outdoor run ([#40](https://github.com/Cosmichomeless/STRIDE/issues/40)) |
 | Privacy "nutrition labels": *Data Not Collected* | **Open.** Needs App Store Connect. HealthKit ([#41](https://github.com/Cosmichomeless/STRIDE/issues/41)) writes to Apple Health on the device and sends nothing to the developer, so *Data Not Collected* remains true |
