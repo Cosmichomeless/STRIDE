@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import os
 
 /// Decides when a finished run goes to Apple Health and tells the UI how it went. The permission sheet
 /// appears in context: when the first run finishes, or when the user turns the setting back on.
@@ -20,6 +21,8 @@ final class HealthSync {
     private(set) var access: HealthAccess
     /// How saving each run went, for the runs finished during this launch.
     private(set) var outcomes: [UUID: Outcome] = [:]
+
+    private static let log = Logger(subsystem: "com.cosmichomeless.stride", category: "health")
 
     private let health: any HealthWriting
     private let settings: AppSettings
@@ -53,12 +56,18 @@ final class HealthSync {
     func runFinished(_ id: UUID) async {
         guard settings.saveToHealth, outcomes[id]?.isSaved != true, saving.insert(id).inserted else { return }
         defer { saving.remove(id) }
-        guard let run = try? store.run(id: id), run.status == .finished, run.distance > 0 else { return }
+        guard let run = try? store.run(id: id), run.status == .finished, run.distance > 0 else {
+            Self.log.info("Run \(id.uuidString, privacy: .public) not sent to Health: it is not finished or has no distance")
+            return
+        }
 
         if health.access == .notDetermined {
-            try? await health.requestAccess()
+            do { try await health.requestAccess() } catch {
+                Self.log.error("Health permission request failed: \(error.localizedDescription, privacy: .public)")
+            }
         }
         refreshAccess()
+        Self.log.info("Health access is \(String(describing: self.access), privacy: .public)")
         switch access {
         case .unavailable:
             return
@@ -70,6 +79,7 @@ final class HealthSync {
         }
 
         guard let points = try? store.points(of: id), let workout = WorkoutRecord(run: run, points: points) else {
+            Self.log.error("Run \(id.uuidString, privacy: .public) could not be turned into a workout")
             outcomes[id] = .failed
             return
         }
@@ -77,8 +87,10 @@ final class HealthSync {
             try await health.save(workout)
             outcomes[id] = .saved
         } catch HealthError.routeNotSaved {
+            Self.log.error("Workout saved but its route was not")
             outcomes[id] = .savedWithoutRoute
         } catch {
+            Self.log.error("Saving to Health failed: \(error.localizedDescription, privacy: .public)")
             outcomes[id] = .failed
         }
     }
