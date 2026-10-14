@@ -31,8 +31,8 @@ struct RouteMapView: View {
                 }
             }
             if mode == .completed {
-                if let start = route.first { Annotation("Start", coordinate: start.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
-                if let end = route.last { Annotation("Finish", coordinate: end.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
+                if let start = route.first { Annotation("Route start", coordinate: start.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
+                if let end = route.last { Annotation("Route finish", coordinate: end.clCoordinate, anchor: .center) { RouteEndpointMarker() } }
             }
         }
         .mapControls {
@@ -41,7 +41,7 @@ struct RouteMapView: View {
         }
         // The first points give the camera something to frame while there is no user fix yet.
         .onChange(of: route.isEmpty) { _, _ in position = Self.position(for: route, mode: mode) }
-        .accessibilityLabel(mode == .live ? "Live route map" : "Completed route map")
+        .accessibilityLabel(mode == .live ? Text("Live route map") : Text("Completed route map"))
     }
 
     static func position(for route: Route, mode: Mode) -> MapCameraPosition {

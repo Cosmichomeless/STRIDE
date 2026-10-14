@@ -1,0 +1,48 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Location permission prompt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE verwendet deinen Standort, um Strecke, Distanz und Pace deiner Läufe aufzuzeichnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE uses your location to record the route, distance and pace of your runs."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE usa tu ubicación para registrar la ruta, la distancia y el ritmo de tus carreras."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE utilise votre position pour enregistrer le parcours, la distance et l’allure de vos courses."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE usa la tua posizione per registrare percorso, distanza e ritmo delle tue corse."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O STRIDE usa sua localização para gravar o percurso, a distância e o ritmo das suas corridas."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
