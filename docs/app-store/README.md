@@ -39,4 +39,4 @@ Both read the app icon and the screenshots in this folder and are deterministic 
 
 ## Tools
 
-`tools/asc_api.py` (a minimal App Store Connect API client) and `tools/submit_review.py` (sends a version to review). Both read the key from the environment; see [`../RELEASE_GUIDE.md`](../RELEASE_GUIDE.md) for the whole procedure.
+`tools/asc_api.py` (a minimal App Store Connect API client) and `tools/submit_review.py` (sends a version to review). Both read the key from the environment.
