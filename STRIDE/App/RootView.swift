@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     let coordinator: TrackingCoordinator
     let history: HistoryModel
+    let settings: AppSettings
     @State private var navigation = AppNavigation()
 
     var body: some View {
@@ -13,9 +14,14 @@ struct RootView: View {
             Tab("History", systemImage: "list.bullet", value: AppTab.history) {
                 HistoryView(history: history, navigation: navigation).tint(BrandPalette.accent)
             }
+            Tab("Settings", systemImage: "gearshape", value: AppTab.settings) {
+                SettingsView(settings: settings).tint(BrandPalette.accent)
+            }
         }
         // The tab bar floats over the gradient, so it has its own tint; the content keeps the accent.
         .tint(BrandPalette.tabTint)
+        .environment(settings)
+        .preferredColorScheme(settings.appearance.colorScheme)
         .onChange(of: coordinator.session.state) { _, state in
             guard state == .finished, let id = coordinator.runId else { return }
             history.reload()

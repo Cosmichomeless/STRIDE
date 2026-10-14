@@ -2,7 +2,7 @@ import Foundation
 import Observation
 
 enum AppTab: Hashable {
-    case tracking, history
+    case tracking, history, settings
 }
 
 /// Which tab is visible and what the History stack shows. The app always opens on Tracking,

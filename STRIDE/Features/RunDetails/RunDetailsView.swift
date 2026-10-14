@@ -4,6 +4,7 @@ import SwiftUI
 struct RunDetailsView: View {
     let history: HistoryModel
     let runId: UUID
+    @Environment(AppSettings.self) private var settings
 
     @State private var run: RunRecord?
     @State private var route = Route()
@@ -11,13 +12,16 @@ struct RunDetailsView: View {
     var body: some View {
         Group {
             if let run {
-                VStack(spacing: 16) {
-                    RouteMapView(route: route, mode: .completed)
-                        .brandMapFrame()
-                    stats(run)
-                    times(run)
+                ScrollView {
+                    VStack(spacing: 16) {
+                        RouteMapView(route: route, mode: .completed)
+                            .brandMapFrame()
+                            .containerRelativeFrame(.vertical) { height, _ in max(260, height * 0.45) }
+                        stats(run)
+                        times(run)
+                    }
+                    .padding()
                 }
-                .padding()
             } else {
                 ContentUnavailableView("Run not found", systemImage: "questionmark.folder")
                     .padding()
@@ -35,10 +39,23 @@ struct RunDetailsView: View {
     }
 
     private func stats(_ run: RunRecord) -> some View {
-        HStack(spacing: 24) {
-            stat("Distance (km)", DistanceFormat.kilometers(run.distance))
-            stat("Duration", RunSummary.duration(run))
-            stat("Avg (/km)", PaceFormat.pace(run.averagePace))
+        let unit = settings.distanceUnit
+        return AdaptiveStack {
+            StatTile(
+                title: "Distance", unit: unit.distanceSymbol,
+                value: DistanceFormat.distance(run.distance, unit: unit),
+                spokenValue: SpokenFormat.distance(run.distance, unit: unit)
+            )
+            StatTile(
+                title: "Duration",
+                value: RunSummary.duration(run),
+                spokenValue: SpokenFormat.duration(run.accumulatedDuration)
+            )
+            StatTile(
+                title: "Avg", unit: unit.paceSuffix,
+                value: PaceFormat.pace(run.averagePace, unit: unit),
+                spokenValue: SpokenFormat.pace(run.averagePace, unit: unit)
+            )
         }
         .frame(maxWidth: .infinity)
         .padding()
@@ -46,25 +63,32 @@ struct RunDetailsView: View {
     }
 
     private func times(_ run: RunRecord) -> some View {
-        HStack {
-            Label(run.startedAt.formatted(date: .omitted, time: .shortened), systemImage: "flag.fill")
-            Spacer()
-            if let finishedAt = run.finishedAt {
-                Label(finishedAt.formatted(date: .omitted, time: .shortened), systemImage: "flag.checkered")
+        ViewThatFits(in: .horizontal) {
+            HStack {
+                startLabel(run)
+                Spacer()
+                finishLabel(run)
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                startLabel(run)
+                finishLabel(run)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .font(.subheadline)
         .foregroundStyle(.secondary)
         .padding()
         .brandCard()
     }
 
-    private func stat(_ title: String, _ value: String) -> some View {
-        VStack(spacing: 4) {
-            Text(value).font(.title2.monospacedDigit().weight(.bold))
-            Text(title).font(.caption).foregroundStyle(.secondary)
+    private func startLabel(_ run: RunRecord) -> some View {
+        Label(run.startedAt.formatted(date: .omitted, time: .shortened), systemImage: "flag.fill")
+    }
+
+    @ViewBuilder
+    private func finishLabel(_ run: RunRecord) -> some View {
+        if let finishedAt = run.finishedAt {
+            Label(finishedAt.formatted(date: .omitted, time: .shortened), systemImage: "flag.checkered")
         }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
     }
 }

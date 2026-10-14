@@ -65,4 +65,16 @@ schemes:
         STRIDE: all
     test:
       targets:
-        - STRIDEUITests
+        - name: STRIDEUITests
+          selectedTests:
+            - ScreenshotWalkthroughTests
+  # The UI regression tests: quick, and independent of the simulator's language.
+  STRIDEUITests:
+    build:
+      targets:
+        STRIDE: all
+    test:
+      targets:
+        - name: STRIDEUITests
+          skippedTests:
+            - ScreenshotWalkthroughTests
