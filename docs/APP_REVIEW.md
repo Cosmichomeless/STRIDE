@@ -19,7 +19,8 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 > and check that distance and the route kept growing. Tap **Finish**, then open the History tab.
 >
 > **Health.** STRIDE can save a finished run to Apple Health (**write only**: workout, distance and
-> route). It never reads Health data, so there is no `NSHealthShareUsageDescription`. The permission
+> route). It never reads Health data (`read: []`); `NSHealthShareUsageDescription` is present only
+> because App Store Connect requires it with the HealthKit entitlement, and says so. The permission
 > sheet appears the first time a run finishes, or when the user turns **Settings › Health › Save runs
 > to Health** back on; the switch is on by default and the app works the same without Health access.
 >
@@ -35,7 +36,7 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 | Policy and support linked inside the app (Settings › About) | Done |
 | Policy and support URL in App Store Connect | **Open.** Needs App Store Connect |
 | GitHub Pages serves the policy and support at `https://cosmichomeless.github.io/STRIDE/privacy/` and `/support/` | Pages enabled from `main` › `/docs`; the app links point there. **Open:** check both URLs load once the PRs are merged, then use them in App Store Connect |
-| HealthKit: `com.apple.developer.healthkit` entitlement and `NSHealthUpdateUsageDescription` (no Share key: nothing is read) | Done in `project.yml`. HealthKit is enabled for the App ID and the app runs on a real iPhone |
+| HealthKit: `com.apple.developer.healthkit` entitlement and `NSHealthUpdateUsageDescription`, plus `NSHealthShareUsageDescription` (required by App Store Connect, nothing is read) | Done in `project.yml`. HealthKit is enabled for the App ID and the app runs on a real iPhone |
 | Health writing checked on a real iPhone (permission sheet, workout and route in the Health app) | Workout saved and visible in Health on a real iPhone; the logic is also covered by unit tests with a double. Check the route in the workout's map before submitting |
 | Review notes above | Written; paste in App Store Connect |
 | Video of background recording with the screen locked | **Open.** Needs a physical iPhone and an outdoor run ([#40](https://github.com/Cosmichomeless/STRIDE/issues/40)) |
