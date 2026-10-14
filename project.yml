@@ -7,8 +7,9 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.0.0"
+    MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: X8H9Y77VL5
     GENERATE_INFOPLIST_FILE: YES
 targets:
   STRIDE:
@@ -34,7 +35,9 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "STRIDE uses your location to record the route, distance and pace of your runs."
-        # STRIDE only writes to Health, so there is no NSHealthShareUsageDescription: it reads nothing.
+        # STRIDE only writes to Health and reads nothing, but App Store Connect rejects the upload without
+        # NSHealthShareUsageDescription whenever the HealthKit entitlement is present.
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "STRIDE does not read your Health data. Apple requires this note because the app saves your runs to Health."
         INFOPLIST_KEY_NSHealthUpdateUsageDescription: "STRIDE saves your finished runs to Health with their distance, duration and route."
   STRIDETests:
     type: bundle.unit-test

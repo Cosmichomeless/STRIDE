@@ -13,7 +13,7 @@ Runs with no distance are not written. Deleting a run in STRIDE does not delete 
 
 ## What is not
 
-STRIDE **reads nothing** from Health: it asks only to share workouts, distance and routes, so the Info.plist has `NSHealthUpdateUsageDescription` and deliberately no `NSHealthShareUsageDescription`. Calories, heart rate, weight and age are not used.
+STRIDE **reads nothing** from Health: it asks only to share workouts, distance and routes, so the permission sheet uses `NSHealthUpdateUsageDescription`. The Info.plist also carries `NSHealthShareUsageDescription`, which says nothing is read: App Store Connect rejects an upload with the HealthKit entitlement and no such key, even though `read` is empty. Calories, heart rate, weight and age are not used.
 
 ## When the permission is asked
 

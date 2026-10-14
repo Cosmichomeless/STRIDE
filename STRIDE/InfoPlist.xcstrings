@@ -1,6 +1,48 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "NSHealthShareUsageDescription" : {
+      "comment" : "Health read prompt: never shown, STRIDE reads nothing; Apple requires the key because HealthKit is linked",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE liest keine deiner Health-Daten. Apple verlangt diesen Hinweis, weil die App deine Läufe in Health sichert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE does not read your Health data. Apple requires this note because the app saves your runs to Health."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE no lee tus datos de Salud. Apple exige este aviso porque la app guarda tus carreras en Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE ne lit aucune de vos données Santé. Apple exige cette mention car l’app enregistre vos courses dans Santé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE non legge i tuoi dati di Salute. Apple richiede questa nota perché l’app salva le tue corse in Salute."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O STRIDE não lê seus dados do Saúde. A Apple exige este aviso porque o app salva suas corridas no Saúde."
+          }
+        }
+      }
+    },
     "NSHealthUpdateUsageDescription" : {
       "comment" : "Health permission prompt: STRIDE only writes workouts",
       "extractionState" : "manual",
