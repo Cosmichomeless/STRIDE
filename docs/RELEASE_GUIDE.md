@@ -87,7 +87,7 @@ Para cada idioma: nombre, subtítulo, descripción, palabras clave y URL de sopo
 
 ## 6. Encabezado y resultados de búsqueda
 
-Son imágenes opcionales de la ficha y **solo se suben en la web**, por idioma: en la página de la versión, elige el idioma en el desplegable y arrastra la imagen. Si solo arrastras una vez, queda en el idioma que tuvieras seleccionado; cambia de idioma y repite.
+Son imágenes opcionales de la ficha y **solo se suben en la web**, por idioma. Ruta en App Store Connect: la app y su versión › **Product Page Information** › **Header and Search Results**; allí se elige el elemento y se sube el archivo (o se escoge uno ya subido en **Asset Library**). Si la imagen sirve para los dos usos (la de 5244x2950), se marca **Use header asset in search results**. **Preview** muestra el resultado por dispositivo, orientación e idioma. En la página de la versión, elige el idioma en el desplegable y arrastra la imagen. Si solo arrastras una vez, queda en el idioma que tuvieras seleccionado; cambia de idioma y repite.
 
 Los scripts `make_header.py` y `make_search.py` las generan en los seis idiomas (tamaños en [app-store/README.md](app-store/README.md)). Para otro idioma, añade su texto en la tabla `TEXT` de ambos.
 
@@ -107,7 +107,7 @@ Los scripts `make_header.py` y `make_search.py` las generan en los seis idiomas 
 
 1. **Privacidad de la app** (*Privacidad de la app*): "Datos no recopilados" y **publicar**.
 2. **Comerciante (DSA)**: *Permisos y reglamentos de App Store › Reglamento de Servicios Digitales*. Para un proyecto personal sin ánimo de lucro, se indica que no se es comerciante (botón **Editar** si ya salía como comerciante).
-3. **Dispositivo médico regulado**: pregunta de Sí/No de la información de la app. Para una app de running, **No**. Si falta, el envío falla (ver errores).
+3. **Dispositivo médico regulado**: en la barra lateral, **General › App Information**, y en **App Store Regulations & Permits** pulsa **Declare Regulated Medical Device**. Para una app de running, **No** y **Save**. Es obligatoria si la app se vende en la UE/EEE, Reino Unido o EE. UU. y su categoría principal o secundaria es Salud y forma física o Médica. Requiere rol de titular de la cuenta o Admin. Si falta, el envío falla (ver errores). Fuente: [Declare regulated medical device status](https://developer.apple.com/help/app-store-connect/manage-app-information/declare-regulated-medical-device-status/).
 
 ## 9. Información para el revisor
 
