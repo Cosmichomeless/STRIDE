@@ -4,7 +4,9 @@ import SwiftUI
 /// keeps the system's contrast in light and dark mode (see docs/DESIGN.md).
 struct SettingsView: View {
     @Bindable var settings: AppSettings
+    let healthSync: HealthSync
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         NavigationStack {
@@ -12,6 +14,7 @@ struct SettingsView: View {
                 VStack(spacing: 16) {
                     unitsCard
                     goalCard
+                    healthCard
                     appearanceCard
                     aboutCard
                 }
@@ -58,6 +61,32 @@ struct SettingsView: View {
                 .accessibilityValue(SpokenFormat.duration(settings.goalTime))
                 .accessibilityIdentifier("goalTimeStepper")
             }
+        }
+    }
+
+    private var healthCard: some View {
+        card("Health", footnote: healthFootnote) {
+            Toggle("Save runs to Health", isOn: $settings.saveToHealth)
+                .disabled(healthSync.access == .unavailable)
+                .accessibilityIdentifier("saveToHealthToggle")
+            if settings.saveToHealth, healthSync.access == .denied {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                }
+                .buttonStyle(.brandFilled)
+            }
+        }
+        .onChange(of: settings.saveToHealth) { _, isOn in
+            if isOn { Task { await healthSync.settingEnabled() } }
+        }
+    }
+
+    private var healthFootnote: LocalizedStringKey {
+        switch healthSync.access {
+        case .unavailable: "Health isn't available on this device."
+        case .denied where settings.saveToHealth: "STRIDE can't save to Health. Allow it in the Health settings of your iPhone."
+        case .notDetermined, .denied, .authorized:
+            "Finished runs are saved to Health with their distance, duration and route. STRIDE never reads your Health data."
         }
     }
 

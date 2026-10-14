@@ -24,6 +24,7 @@ input and no device.
 | `Calculations/` | Pure functions: distance, current pace, average pace, formatting inputs. Operate on validated samples only. | Filtering, state. |
 | `Persistence/` | SwiftData models/containers, saving runs and points incrementally, restoring the active run, deleting runs. | Business rules (state transitions). |
 | `Models/` | Plain `Sendable` value types shared across modules (`LocationSample`, run status, GPS status). | Behavior. |
+| `Health/` | Saving a finished run to Apple Health: `HealthWriting` (the boundary), `HealthKitWriter` (the only file that imports HealthKit), `WorkoutRecord` (plain values), `HealthSync` (when to ask, what to save, how it went). | Run state, UI. |
 | `Maps/` | MapKit view wrappers, polyline building, map framing. | Data loading. |
 | `Features/*` | SwiftUI views and their view models. Render state, forward user intents. | Any state that must survive a view being destroyed. |
 

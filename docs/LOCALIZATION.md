@@ -5,7 +5,7 @@ STRIDE is available in English (source), Spanish, French, German, Italian and Br
 ## How it works
 
 - `STRIDE/Localizable.xcstrings` holds every text of the UI; the English text is the key.
-- `STRIDE/InfoPlist.xcstrings` holds the location permission prompt (`NSLocationWhenInUseUsageDescription`). The English text also stays in `project.yml` as the fallback.
+- `STRIDE/InfoPlist.xcstrings` holds the permission prompts (`NSLocationWhenInUseUsageDescription`, `NSHealthUpdateUsageDescription`). The English text also stays in `project.yml` as the fallback.
 - Views use `Text("…")`, `Button("…")` and so on, which look the key up. Texts built outside a view are `LocalizedStringResource` (`GPSStatus.label`, `LocationAuthorization.message`, `PauseReason.message`, `DistanceUnit.name`, …) so they follow the language too.
 - Beware of a ternary of literals passed where a `String` is accepted (`.navigationTitle(a ? "x" : "y")`): it becomes a plain `String` and is **not** localized. Type it as `LocalizedStringKey` or wrap it in `Text`.
 - Numbers, dates, durations and the spoken values (VoiceOver) come from `Locale`, so `1,25 km` in Spanish and `1.25 km` in English need no extra strings. Miles are the default in the United States and the United Kingdom (see `DistanceUnit.default(for:)`).

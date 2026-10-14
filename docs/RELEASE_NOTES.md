@@ -41,7 +41,7 @@ CoreLocation configurations ([PERFORMANCE](PERFORMANCE.md)).
 - The interface does not show a failed write to the store
   (`TrackingCoordinator.persistenceError` is kept but not displayed).
 - No CI; tests are run locally. English-only interface; screenshots in light mode.
-- Out of scope: social features, Apple Watch, HealthKit, heart-rate sensors,
+- Out of scope: social features, Apple Watch, reading Health data, heart-rate sensors,
   third-party integrations and any backend ([PRODUCT](PRODUCT.md)).
 
 ## Version

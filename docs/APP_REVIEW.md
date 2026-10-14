@@ -18,6 +18,11 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 > screen and walk or drive for a minute (in the Simulator: Features › Location › City Run), unlock
 > and check that distance and the route kept growing. Tap **Finish**, then open the History tab.
 >
+> **Health.** STRIDE can save a finished run to Apple Health (**write only**: workout, distance and
+> route). It never reads Health data, so there is no `NSHealthShareUsageDescription`. The permission
+> sheet appears the first time a run finishes, or when the user turns **Settings › Health › Save runs
+> to Health** back on; the switch is on by default and the app works the same without Health access.
+>
 > **Data.** Runs are stored only on the device. No analytics, advertising, tracking or third-party SDKs.
 > Privacy policy: <https://github.com/Cosmichomeless/STRIDE/blob/main/docs/privacy.md>
 
@@ -30,9 +35,11 @@ What App Review needs for STRIDE 1.0, and what is still open. The text in
 | Policy and support linked inside the app (Settings › About) | Done |
 | Policy and support URL in App Store Connect | **Open.** Needs App Store Connect |
 | Enable GitHub Pages so the URLs are not raw repository pages | **Open.** Repository setting; then change `AppLinks` and App Store Connect together |
+| HealthKit: `com.apple.developer.healthkit` entitlement and `NSHealthUpdateUsageDescription` (no Share key: nothing is read) | Done in `project.yml`. **Open:** HealthKit must be enabled for the App ID in the developer account (automatic signing does it with a team); not verifiable without one |
+| Health writing checked on a real iPhone (permission sheet, workout and route in the Health app) | **Open.** Needs a physical iPhone; the logic is covered by unit tests with a double |
 | Review notes above | Written; paste in App Store Connect |
 | Video of background recording with the screen locked | **Open.** Needs a physical iPhone and an outdoor run ([#40](https://github.com/Cosmichomeless/STRIDE/issues/40)) |
-| Privacy "nutrition labels": *Data Not Collected* | **Open.** Needs App Store Connect. Revisit if HealthKit ([#41](https://github.com/Cosmichomeless/STRIDE/issues/41)) ships: it still stays on device, so *Data Not Collected* remains true |
+| Privacy "nutrition labels": *Data Not Collected* | **Open.** Needs App Store Connect. HealthKit ([#41](https://github.com/Cosmichomeless/STRIDE/issues/41)) writes to Apple Health on the device and sends nothing to the developer, so *Data Not Collected* remains true |
 | Age rating questionnaire | **Open.** Needs App Store Connect. Expected 4+: no objectionable content, no web access, no user-generated content |
 | EU trader status (DSA) | **Open.** A decision for the account holder (trader or not) in App Store Connect |
 

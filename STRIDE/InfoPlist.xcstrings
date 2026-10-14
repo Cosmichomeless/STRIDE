@@ -1,6 +1,48 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "NSHealthUpdateUsageDescription" : {
+      "comment" : "Health permission prompt: STRIDE only writes workouts",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE sichert deine beendeten Läufe mit Distanz, Dauer und Strecke in Health."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE saves your finished runs to Health with their distance, duration and route."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE guarda tus carreras terminadas en Salud, con su distancia, duración y ruta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE enregistre vos courses terminées dans Santé, avec leur distance, leur durée et leur parcours."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STRIDE salva le tue corse terminate in Salute, con distanza, durata e percorso."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O STRIDE salva suas corridas finalizadas no Saúde, com distância, duração e percurso."
+          }
+        }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "Location permission prompt",
       "extractionState" : "manual",

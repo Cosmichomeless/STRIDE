@@ -4,7 +4,7 @@ import XCTest
 final class LocalizationUITests: XCTestCase {
     private func launch(language: String, locale: String, extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-uitest-reset-settings"] + extra
+        app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-uitest-reset-settings", "-uitest-fake-health"] + extra
         app.launch()
         return app
     }

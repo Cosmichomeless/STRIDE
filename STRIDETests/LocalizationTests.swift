@@ -104,14 +104,23 @@ struct LocalizationTests {
         #expect(DistanceFormat.distance(1_250, unit: .kilometers, locale: en) == "1.25")
     }
 
-    @Test func thePermissionPromptIsTranslated() throws {
+    @Test(arguments: [
+        ("NSLocationWhenInUseUsageDescription", "STRIDE uses your location"),
+        ("NSHealthUpdateUsageDescription", "STRIDE saves your finished runs"),
+    ])
+    func thePermissionPromptsAreTranslated(key: String, english: String) throws {
         let bundle = Bundle(for: TrackingCoordinator.self)
         for language in Self.languages {
             let path = try #require(bundle.path(forResource: language, ofType: "lproj"), "no \(language).lproj")
-            let text = try #require(Bundle(path: path)).localizedString(
-                forKey: "NSLocationWhenInUseUsageDescription", value: "MISSING", table: "InfoPlist"
-            )
-            #expect(text != "MISSING" && !text.hasPrefix("STRIDE uses your location"), "\(language): \(text)")
+            let text = try #require(Bundle(path: path)).localizedString(forKey: key, value: "MISSING", table: "InfoPlist")
+            #expect(text != "MISSING" && !text.hasPrefix(english), "\(language): \(text)")
         }
+    }
+
+    @Test func healthTextsFollowTheLanguage() {
+        #expect(Self.localized("Saved to Health", "en") == "Saved to Health")
+        #expect(Self.localized("Saved to Health", "es") == "Guardada en Salud")
+        #expect(Self.localized("Saved to Health", "fr") == "Enregistrée dans Santé")
+        #expect(Self.localized("Saved to Health", "pt-BR") == "Salva no Saúde")
     }
 }
