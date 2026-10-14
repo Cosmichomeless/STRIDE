@@ -1,8 +1,3 @@
----
-title: Privacy Policy — STRIDE
-permalink: /privacy/
----
-
 # Privacy Policy — STRIDE
 
 *Last updated: October 14, 2026.* · [Español más abajo](#politica-de-privacidad)

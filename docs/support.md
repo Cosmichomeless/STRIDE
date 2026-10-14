@@ -1,8 +1,3 @@
----
-title: STRIDE — Support
-permalink: /support/
----
-
 # STRIDE — Support
 
 STRIDE is a run tracker with no account: your runs stay on your iPhone.
