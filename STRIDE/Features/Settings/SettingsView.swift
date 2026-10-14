@@ -13,6 +13,7 @@ struct SettingsView: View {
                     unitsCard
                     goalCard
                     appearanceCard
+                    aboutCard
                 }
                 .padding()
             }
@@ -63,6 +64,15 @@ struct SettingsView: View {
     private var appearanceCard: some View {
         card("Appearance", footnote: "System follows the light or dark mode of your iPhone.") {
             choice("Appearance", selection: $settings.appearance, options: AppSettings.Appearance.allCases) { Text($0.name) }
+        }
+    }
+
+    private var aboutCard: some View {
+        card("About", footnote: "STRIDE has no account and sends your runs nowhere.") {
+            Link("Privacy policy", destination: AppLinks.privacyPolicy)
+                .accessibilityIdentifier("privacyPolicyLink")
+            Link("Support", destination: AppLinks.support)
+                .accessibilityIdentifier("supportLink")
         }
     }
 
