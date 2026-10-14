@@ -1,6 +1,6 @@
 # App Store listing text
 
-Translated listing copy for the languages the app supports (see [LOCALIZATION.md](LOCALIZATION.md)). It is **not uploaded anywhere**: paste it into App Store Connect, one localization per language. Limits: name 30, subtitle 30, keywords 100 characters.
+Translated listing copy for the languages the app supports (see [LOCALIZATION.md](LOCALIZATION.md)). It is **not uploaded anywhere**: paste it into App Store Connect, one localization per language. Limits: name 30, subtitle 30, keywords 100 characters. The images uploaded with it (screenshots, header, search results) are in [`app-store/`](app-store/README.md).
 
 The app name is `STRIDE` in every language. **Primary language: Spanish (Spain).** The app is meant for every country and region; the Spanish text also serves Latin America, and the other five languages are added as extra localizations.
 

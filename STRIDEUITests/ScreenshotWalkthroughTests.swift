@@ -4,7 +4,8 @@ import XCTest
 /// Drives a short synthetic run in the simulator and saves full-screen PNGs of each screen.
 /// Not a regression test: it exists to (re)capture the README screenshots. See docs/screenshots/README.md.
 ///
-/// Set `TEST_RUNNER_SHOTS_DIR` to the folder that should receive the PNGs.
+/// Set `TEST_RUNNER_SHOTS_DIR` to the folder that should receive the PNGs, and optionally `TEST_RUNNER_SHOTS_LANG`
+/// (en, es, fr, de, it, pt-BR; English when unset) to capture the app in that language.
 final class ScreenshotWalkthroughTests: XCTestCase {
     /// A loop through the Retiro park (Madrid), about 1.3 km, as (latitude, longitude) corners.
     private static let corners: [(Double, Double)] = [
@@ -12,6 +13,32 @@ final class ScreenshotWalkthroughTests: XCTestCase {
         (40.42060, -3.67930), (40.42110, -3.68260), (40.41900, -3.68450),
         (40.41530, -3.68330),
     ]
+
+    /// The controls the walkthrough taps or waits for, by language.
+    private struct Labels {
+        let start, finish, resume, allowLocation, gpsReady, delete: String
+    }
+
+    private static let allLabels: [String: Labels] = [
+        "en": Labels(start: "Start", finish: "Finish", resume: "Resume", allowLocation: "Allow Location", gpsReady: "GPS ready", delete: "Delete"),
+        "es": Labels(start: "Iniciar", finish: "Terminar", resume: "Reanudar", allowLocation: "Permitir ubicación", gpsReady: "GPS listo", delete: "Eliminar"),
+        "fr": Labels(start: "Démarrer", finish: "Terminer", resume: "Reprendre", allowLocation: "Autoriser la localisation", gpsReady: "GPS prêt", delete: "Supprimer"),
+        "de": Labels(start: "Start", finish: "Beenden", resume: "Fortsetzen", allowLocation: "Standort erlauben", gpsReady: "GPS bereit", delete: "Löschen"),
+        "it": Labels(start: "Avvia", finish: "Termina", resume: "Riprendi", allowLocation: "Consenti la posizione", gpsReady: "GPS pronto", delete: "Elimina"),
+        "pt-BR": Labels(start: "Iniciar", finish: "Finalizar", resume: "Retomar", allowLocation: "Permitir localização", gpsReady: "GPS pronto", delete: "Excluir"),
+    ]
+
+    private var language: String {
+        let requested = ProcessInfo.processInfo.environment["SHOTS_LANG"] ?? "en"
+        return Self.allLabels[requested] != nil ? requested : "en"
+    }
+
+    private var labels: Labels { Self.allLabels[language]! }
+
+    /// The tab bar is addressed by position (Tracking, History, Settings) so it does not depend on the language.
+    private func tab(_ app: XCUIApplication, _ index: Int) -> XCUIElement {
+        app.tabBars.buttons.element(boundBy: index)
+    }
 
     private var shotsDirectory: URL? {
         ProcessInfo.processInfo.environment["SHOTS_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
@@ -48,7 +75,7 @@ final class ScreenshotWalkthroughTests: XCTestCase {
     private func allowLocationIfAsked() {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         let allow = springboard.buttons.matching(
-            NSPredicate(format: "label IN %@", ["Allow While Using App", "Permitir al usarse la app"])
+            NSPredicate(format: "label IN %@", ["Allow While Using App", "Permitir al usarse la app", "Pendant l’utilisation de l’app", "Beim Verwenden der App erlauben", "Consenti durante l’uso dell’app", "Permitir Durante o Uso do App"])
         ).firstMatch
         if allow.waitForExistence(timeout: 4) { allow.tap() }
     }
@@ -57,38 +84,38 @@ final class ScreenshotWalkthroughTests: XCTestCase {
     /// A run interrupted by an earlier attempt comes back paused, so it is finished and deleted first.
     @MainActor
     private func resetToCleanState(_ app: XCUIApplication) {
-        if app.buttons["Resume"].waitForExistence(timeout: 5) { app.buttons["Finish"].tap() }
-        app.tabBars.buttons["History"].tap()
-        let delete = app.buttons.matching(NSPredicate(format: "label IN %@", ["Delete", "Eliminar", "Borrar"])).firstMatch
+        if app.buttons[labels.resume].waitForExistence(timeout: 5) { app.buttons[labels.finish].tap() }
+        tab(app, 1).tap()
+        let delete = app.buttons[labels.delete]
         var guardCount = 0
         while guardCount < 20, app.cells.firstMatch.waitForExistence(timeout: 2) {
             app.cells.firstMatch.swipeLeft()
             if delete.waitForExistence(timeout: 2) { delete.tap() }
             guardCount += 1
         }
-        app.tabBars.buttons["Tracking"].tap()
+        tab(app, 0).tap()
     }
 
     @MainActor
     func testRecordsARunAndCapturesEachScreen() throws {
         let app = XCUIApplication()
-        // The walkthrough finds controls by their English labels, whatever language the simulator uses.
-        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-uitest-fake-health"]
+        let locale = language.replacingOccurrences(of: "-", with: "_")
+        app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-uitest-fake-health"]
         XCUIDevice.shared.location = XCUILocation(location: CLLocation(latitude: Self.corners[0].0, longitude: Self.corners[0].1))
         app.launch()
         allowLocationIfAsked()
         resetToCleanState(app)
 
-        let start = app.buttons["Start"]
+        let start = app.buttons[labels.start]
         XCTAssertTrue(start.waitForExistence(timeout: 10))
         // On a fresh install the banner offers "Allow Location"; grant it so the idle shot shows "GPS ready".
-        let allowLocation = app.buttons["Allow Location"]
+        let allowLocation = app.buttons[labels.allowLocation]
         if allowLocation.waitForExistence(timeout: 2) {
             allowLocation.tap()
             allowLocationIfAsked()
         }
         // The simulated fix set before the grant is not redelivered: nudge it until the banner turns ready.
-        let ready = app.staticTexts["GPS ready"]
+        let ready = app.staticTexts[labels.gpsReady]
         for attempt in 0..<6 where !ready.exists {
             let offset = Double(attempt % 2) * 0.00005
             XCUIDevice.shared.location = XCUILocation(
@@ -109,11 +136,11 @@ final class ScreenshotWalkthroughTests: XCTestCase {
             if index == 100 { try save("02-tracking-active", app) }
         }
 
-        app.buttons["Finish"].tap()
+        app.buttons[labels.finish].tap()
         sleep(2)
         try save("03-run-details", app)
 
-        app.tabBars.buttons["History"].tap()
+        tab(app, 1).tap()
         sleep(1)
         try save("04-history", app)
     }
