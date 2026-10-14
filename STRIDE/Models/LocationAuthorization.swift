@@ -1,4 +1,5 @@
 import CoreLocation
+import Foundation
 
 /// App-level view of the CoreLocation authorization, decoupled from `CLAuthorizationStatus`.
 enum LocationAuthorization: Sendable, Equatable {
@@ -29,7 +30,7 @@ enum LocationAuthorization: Sendable, Equatable {
     var canOpenSettings: Bool { self == .denied }
 
     /// Message for the Tracking screen, `nil` when nothing needs to be explained.
-    var message: String? {
+    var message: LocalizedStringResource? {
         switch self {
         case .notDetermined, .always:
             nil

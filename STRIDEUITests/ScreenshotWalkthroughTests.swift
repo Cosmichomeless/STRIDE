@@ -72,6 +72,8 @@ final class ScreenshotWalkthroughTests: XCTestCase {
     @MainActor
     func testRecordsARunAndCapturesEachScreen() throws {
         let app = XCUIApplication()
+        // The walkthrough finds controls by their English labels, whatever language the simulator uses.
+        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         XCUIDevice.shared.location = XCUILocation(location: CLLocation(latitude: Self.corners[0].0, longitude: Self.corners[0].1))
         app.launch()
         allowLocationIfAsked()

@@ -8,7 +8,7 @@ enum PauseReason: Sendable, Equatable {
     /// The app stopped running (killed, crashed, restarted) and nothing was recorded after `at`.
     case interrupted(at: Date)
 
-    var message: String {
+    var message: LocalizedStringResource {
         switch self {
         case .permissionLost:
             "Location access was lost, so the run was paused. Allow access, then resume."

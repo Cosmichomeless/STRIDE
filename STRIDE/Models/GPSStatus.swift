@@ -12,7 +12,7 @@ enum GPSStatus: Sendable, Equatable {
     /// Location services off or permission missing.
     case unavailable
 
-    var label: String {
+    var label: LocalizedStringResource {
         switch self {
         case .acquiring: "Acquiring GPS…"
         case .good: "GPS ready"

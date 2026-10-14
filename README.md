@@ -109,7 +109,7 @@ Not tested:
 - Foreground and background recording is verified with deterministic tests, not with outdoor runs.
 - If the process is killed, STRIDE does not relaunch itself (no significant-location-change or region monitoring), so a gap appears until the user opens the app.
 - Out of scope: social features, Apple Watch, HealthKit, heart-rate sensors, third-party integrations and any backend ([PRODUCT](docs/PRODUCT.md)).
-- English-only interface text; screenshots in light mode only.
+- Screenshots are in English and light mode only; the interface itself is localized (see docs/LOCALIZATION.md).
 
 ## Documentation
 

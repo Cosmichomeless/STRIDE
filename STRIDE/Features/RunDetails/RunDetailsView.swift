@@ -30,7 +30,7 @@ struct RunDetailsView: View {
             }
         }
         .brandScreen()
-        .navigationTitle(run?.startedAt.formatted(date: .abbreviated, time: .omitted) ?? "Run")
+        .navigationTitle(Text(run?.startedAt.formatted(date: .abbreviated, time: .omitted) ?? String(localized: "Run")))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: runId) {
             run = history.run(id: runId)

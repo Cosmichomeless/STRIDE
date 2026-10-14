@@ -109,7 +109,7 @@ struct TrackingView: View {
     @ViewBuilder private var controls: some View {
         switch coordinator.session.state {
         case .idle, .finished:
-            Button(coordinator.session.state == .finished ? "New Run" : "Start", action: coordinator.start)
+            Button(startTitle, action: coordinator.start)
                 .buttonStyle(.brandPrimary)
                 .disabled(!canStart)
         case .active:
@@ -125,6 +125,11 @@ struct TrackingView: View {
                 Button("Finish", role: .destructive, action: coordinator.finish).buttonStyle(.brandSecondary)
             }
         }
+    }
+
+    /// Typed as a key so the ternary is localized instead of becoming a plain `String`.
+    private var startTitle: LocalizedStringKey {
+        coordinator.session.state == .finished ? LocalizedStringKey("New Run") : LocalizedStringKey("Start")
     }
 
     private var canStart: Bool {
