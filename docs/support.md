@@ -1,3 +1,8 @@
+---
+title: STRIDE — Support
+permalink: /support/
+---
+
 # STRIDE — Support
 
 STRIDE is a run tracker with no account: your runs stay on your iPhone.
@@ -6,7 +11,7 @@ STRIDE is a run tracker with no account: your runs stay on your iPhone.
 
 - **A bug or a question:** open an issue at <https://github.com/Cosmichomeless/STRIDE/issues>.
   Say your iPhone model, your iOS version and what you were doing.
-- **Privacy:** read the [privacy policy](privacy.md).
+- **Privacy:** read the [privacy policy](https://cosmichomeless.github.io/STRIDE/privacy/).
 
 ## Common questions
 
@@ -29,7 +34,7 @@ STRIDE es un registrador de carreras sin cuenta: tus carreras se quedan en tu iP
 
 - **Un fallo o una duda:** abre una incidencia en <https://github.com/Cosmichomeless/STRIDE/issues>.
   Indica el modelo de iPhone, la versión de iOS y qué estabas haciendo.
-- **Privacidad:** lee la [política de privacidad](privacy.md).
+- **Privacidad:** lee la [política de privacidad](https://cosmichomeless.github.io/STRIDE/privacy/).
 
 ## Preguntas frecuentes
 

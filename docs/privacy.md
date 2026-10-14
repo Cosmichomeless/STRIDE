@@ -1,6 +1,11 @@
+---
+title: Privacy Policy — STRIDE
+permalink: /privacy/
+---
+
 # Privacy Policy — STRIDE
 
-*Last updated: October 14, 2026.* · [Español más abajo](#política-de-privacidad)
+*Last updated: October 14, 2026.* · [Español más abajo](#politica-de-privacidad)
 
 **Summary: STRIDE does not collect your data.** There are no accounts, no analytics, no advertising and no third-party SDKs. The app does not track you.
 
@@ -39,6 +44,8 @@ If this policy changes, the new version will be published at this address with a
 Questions about privacy: open an issue at <https://github.com/Cosmichomeless/STRIDE/issues>.
 
 ---
+
+<a id="politica-de-privacidad"></a>
 
 # Política de privacidad
 
